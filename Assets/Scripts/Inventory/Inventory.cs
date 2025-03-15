@@ -1,16 +1,23 @@
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEditor;
+
+//[CreateAssetMenu(fileName = "Inventory", menuName = "Inventory")]
 
 public class Inventory : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+   //45개의 인벤토리 slot을 InventoryManager에서 관리하기 위해 Inventory 배열을 public으로 선언
+   public Inventory[] inventorySlots;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+   public void AddItem(Item item)
+   {
+      for (int i = 0; i < inventorySlots.Length; i++)
+      {
+         //InventorySlots slot = inventorySlots[i];
+      }
+   }
+   
 }
+
+
