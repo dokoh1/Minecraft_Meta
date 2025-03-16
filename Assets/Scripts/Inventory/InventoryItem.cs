@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,7 +10,14 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     [Header("UI")]
     public Image image;
     
-    public Transform parentAfterDrag; // 부모 저장 변수
+    [HideInInspector] public Item item;
+    [HideInInspector] public Transform parentAfterDrag; // 부모 저장 변수
+    
+    public void InitializeItem(Item newItem)
+    {
+        item = newItem;
+        image.sprite = newItem.image;
+    }
 
     public void OnBeginDrag(PointerEventData eventData)
     {

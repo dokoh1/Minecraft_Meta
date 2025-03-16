@@ -6,12 +6,38 @@ using UnityEditor;
 
 //[CreateAssetMenu(fileName = "Inventory", menuName = "Inventory")]
 
-public class Inventory : MonoBehaviour
+public class InventoryShow : MonoBehaviour
 {
+   private bool ActiveFlag = false;
+
+   private void Start()
+   {
+      // 부모는 활성화 유지, 모든 자식 비활성화
+      gameObject.SetActive(true);
+      for (int i = 0; i < transform.childCount; i++)
+      {
+         transform.GetChild(i).gameObject.SetActive(false);
+      }
+   }
+
+   private void Update()
+   {
+      if (Input.GetKeyDown(KeyCode.I))
+      {
+         ActiveFlag = !ActiveFlag;
+
+         // 모든 자식을 켜거나 끄기
+         for (int i = 0; i < transform.childCount; i++)
+         {
+            transform.GetChild(i).gameObject.SetActive(ActiveFlag);
+         }
+      }
+   }
+   
    //45개의 인벤토리 slot을 InventoryManager에서 관리하기 위해 Inventory 배열을 public으로 선언
    //public Inventory[] inventorySlots;
    
-   private bool ActiveFlag = false;
+   //private bool ActiveFlag = false;
    /*
    public void AddItem(Item item)
    {
@@ -21,6 +47,7 @@ public class Inventory : MonoBehaviour
       }
    }
 */
+   /*
    private void Start()
    {
       gameObject.SetActive(ActiveFlag);
@@ -42,6 +69,8 @@ public class Inventory : MonoBehaviour
          }
       }
    }
+   */
 }
+
 
 
