@@ -3,12 +3,14 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEngine.EventSystems;
 
 //[CreateAssetMenu(fileName = "Inventory", menuName = "Inventory")]
 
 public class InventoryShow : MonoBehaviour
 {
    private bool ActiveFlag = false;
+   private PointerEventData pointerEventData;
 
    private void Start()
    {
@@ -30,6 +32,7 @@ public class InventoryShow : MonoBehaviour
          for (int i = 0; i < transform.childCount; i++)
          {
             transform.GetChild(i).gameObject.SetActive(ActiveFlag);
+            ExecuteEvents.Execute(gameObject, pointerEventData, ExecuteEvents.beginDragHandler);
          }
       }
    }
