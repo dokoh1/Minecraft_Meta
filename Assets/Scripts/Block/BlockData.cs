@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 public enum BlockTypeEnum
 {
+    Air,
     Stone,
     BlackStone,
     Dirt,
@@ -14,7 +15,7 @@ public enum BlockTypeEnum
 public class BlockData : MonoBehaviour
 {
     public readonly Dictionary<BlockTypeEnum, BlockTypeData> BlockTypeDictionary = new();
-    
+    public Material _material;
     private void Awake()
     {
         LoadBlockTypes();

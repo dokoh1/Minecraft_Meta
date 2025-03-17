@@ -2,11 +2,19 @@ using UnityEngine;
 // Data Only Read and Value Not Changed
 public static class VoxelData
 {
-    public static readonly int ChunkWidth = 16;
-    public static readonly int ChunkDepth = 16;
-    public static readonly int ChunkHeight = 30;
+    public static readonly int ChunkWidth = 5;
+    public static readonly int ChunkDepth = 5;
+    public static readonly int ChunkHeight = 8;
 
     public static readonly int TextureAtlasSize = 16;
+    public static readonly int TerrainSize = 100;
+
+    public static readonly int ViewDistance = 5;
+    public static int TerrainInVoxelSize
+    {
+        get { return TerrainSize * ChunkWidth; }
+    }
+    
 
     public static float NormalizedBlockTextureSize
     {
@@ -57,4 +65,16 @@ public static class VoxelData
         new Vector2(1.0f, 0.0f),
         new Vector2(1.0f, 1.0f),
     };
+}
+
+public class Coord
+{
+    public int X;
+    public int Z;
+
+    public Coord(int x, int z)
+    {
+        X = x;
+        Z = z;
+    }
 }
