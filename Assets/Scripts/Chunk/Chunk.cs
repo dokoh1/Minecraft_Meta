@@ -1,27 +1,36 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Chunk : MonoBehaviour
+public class Chunk
 {
-    public BlockData blockData;
-
+    public Coord _coord;
+    
+    private BlockData BlockData;
+    private GameObject _chunkObject;
     private MeshRenderer _renderer;
     private MeshFilter _meshFilter;
     
     private int _vertexIndex = 0;
-    private readonly BlockTypeEnum[,,] _blockNames = new BlockTypeEnum[16, 256, 16];
+    private readonly BlockTypeEnum[,,] _blockNames = new BlockTypeEnum[16, 16, 16];
     
     private readonly List<Vector3> _vertices = new();
     private readonly List<int> _indices = new();
     private readonly List<Vector2> _uvs = new();
 
-
-    private void Awake()
+    private MinecraftTerrain _terrain;
+    public Chunk(Coord coord, BlockData blockData, MinecraftTerrain terrain)
     {
-        blockData = GameObject.Find("BlockData").GetComponent<BlockData>();
-        _renderer = GetComponent<MeshRenderer>();
-        _meshFilter = GetComponent<MeshFilter>();
-
+        _coord = coord;
+        _chunkObject = new GameObject();
+        BlockData = blockData;
+        _meshFilter = _chunkObject.AddComponent<MeshFilter>();
+        _renderer = _chunkObject.AddComponent<MeshRenderer>();
+        _terrain = terrain;
+        
+        _renderer.material = blockData._material;
+        _chunkObject.transform.SetParent(_terrain.transform);
+        _chunkObject.transform.position = new Vector3(coord.X * VoxelData.ChunkWidth, 0f, coord.Z * VoxelData.ChunkDepth);
+        
         ChunkTypeSetting();
         CreateVoxelChunk();
         CreateMesh();
@@ -36,13 +45,7 @@ public class Chunk : MonoBehaviour
             {
                 for (int z = 0; z < VoxelData.ChunkDepth; z++)
                 {
-                    // if (y < 200)
-                    // {
-                    //     blockNames[y, x, z] = "Dirt";
-                    // }
-                    // else
-                    _blockNames[x, y, z] = BlockTypeEnum.Stone;
-
+                        _blockNames[x, y, z] = _terrain.BlockCondition(new Vector3(x, y, z) + _chunkObject.transform.position);
                 }
             }
         }
@@ -62,9 +65,9 @@ public class Chunk : MonoBehaviour
         if (x < 0 || x > VoxelData.ChunkWidth - 1 ||
             y < 0 || y > VoxelData.ChunkHeight - 1 ||
             z < 0 || z > VoxelData.ChunkDepth - 1)
-            return false;
+            return BlockData.BlockTypeDictionary[_terrain.BlockCondition(new Vector3(x, y, z) + _chunkObject.transform.position)].isSolid;
         
-        return blockData.BlockTypeDictionary[_blockNames[x, y, z]].isSolid;
+        return BlockData.BlockTypeDictionary[_blockNames[x, y, z]].isSolid;
     }
 
     void CreateVoxelChunk()
@@ -92,13 +95,12 @@ public class Chunk : MonoBehaviour
             {
                 BlockTypeEnum blockKey = _blockNames[(int)pos.x, (int)pos.y, (int)pos.z];
                 
-                // 처음에 vertex 정보를 Index정보를 바탕으로 먼저 그리고 vertexIndex를 넣는다.
                 _vertices.Add(pos + VoxelData.VoxelVertes[VoxelData.VoxelIndex[i, 0]]);
                 _vertices.Add(pos + VoxelData.VoxelVertes[VoxelData.VoxelIndex[i, 1]]);
                 _vertices.Add(pos + VoxelData.VoxelVertes[VoxelData.VoxelIndex[i, 2]]);
                 _vertices.Add(pos + VoxelData.VoxelVertes[VoxelData.VoxelIndex[i, 3]]);
 
-                AddTexture(blockData.BlockTypeDictionary[blockKey].GetTextureID(i));
+                AddTexture(BlockData.BlockTypeDictionary[blockKey].GetTextureID(i));
                 
                 _indices.Add(_vertexIndex);
                 _indices.Add(_vertexIndex + 1);
@@ -131,7 +133,6 @@ public class Chunk : MonoBehaviour
     /// <param name="textureID"></param>
     void AddTexture(int textureID)
     {
-        // ReSharper disable once PossibleLossOfFraction
         float y = textureID / VoxelData.TextureAtlasSize;
         float x = textureID - (y * VoxelData.TextureAtlasSize);
 
@@ -145,3 +146,4 @@ public class Chunk : MonoBehaviour
         _uvs.Add(new Vector2(x + VoxelData.NormalizedBlockTextureSize, y + VoxelData.NormalizedBlockTextureSize));
     }
 }
+
