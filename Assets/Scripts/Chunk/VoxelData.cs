@@ -1,5 +1,5 @@
 using UnityEngine;
-// Data Only Read and Value Not Changed
+
 public static class VoxelData
 {
     public static readonly int ChunkWidth = 5;

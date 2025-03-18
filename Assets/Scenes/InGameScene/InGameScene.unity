@@ -407,6 +407,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   blockData: {fileID: 601979238}
+  player: {fileID: 330585546}
 --- !u!4 &507072878
 Transform:
   m_ObjectHideFlags: 0

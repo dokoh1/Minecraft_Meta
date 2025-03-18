@@ -95,7 +95,6 @@ public class Chunk
             {
                 BlockTypeEnum blockKey = _blockNames[(int)pos.x, (int)pos.y, (int)pos.z];
                 
-                // 처음에 vertex 정보를 Index정보를 바탕으로 먼저 그리고 vertexIndex를 넣는다.
                 _vertices.Add(pos + VoxelData.VoxelVertes[VoxelData.VoxelIndex[i, 0]]);
                 _vertices.Add(pos + VoxelData.VoxelVertes[VoxelData.VoxelIndex[i, 1]]);
                 _vertices.Add(pos + VoxelData.VoxelVertes[VoxelData.VoxelIndex[i, 2]]);
@@ -134,7 +133,6 @@ public class Chunk
     /// <param name="textureID"></param>
     void AddTexture(int textureID)
     {
-        // ReSharper disable once PossibleLossOfFraction
         float y = textureID / VoxelData.TextureAtlasSize;
         float x = textureID - (y * VoxelData.TextureAtlasSize);
 
