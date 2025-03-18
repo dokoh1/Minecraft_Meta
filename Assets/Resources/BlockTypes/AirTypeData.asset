@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8c3c4720acb4d3444b37d483dfcb061a, type: 3}
-  m_Name: Grass
+  m_Name: AirTypeData
   m_EditorClassIdentifier: 
-  isSolid: 1
-  blockName: Grass
-  backFaceTexture: 3
-  frontFaceTexture: 3
-  topFaceTexture: 212
-  bottomFaceTexture: 2
-  leftFaceTexture: 3
-  rightFaceTexture: 3
+  isSolid: 0
+  blockName: Air
+  backFaceTexture: 0
+  frontFaceTexture: 0
+  topFaceTexture: 0
+  bottomFaceTexture: 0
+  leftFaceTexture: 0
+  rightFaceTexture: 0
