@@ -2,12 +2,12 @@ using UnityEngine;
 
 public static class VoxelData
 {
-    public static readonly int ChunkWidth = 5;
-    public static readonly int ChunkDepth = 5;
-    public static readonly int ChunkHeight = 8;
+    public static readonly int ChunkWidth = 16;
+    public static readonly int ChunkDepth = 16;
+    public static readonly int ChunkHeight = 256;
 
     public static readonly int TextureAtlasSize = 16;
-    public static readonly int TerrainSize = 100;
+    public static readonly int TerrainSize = 10;
 
     public static readonly int ViewDistance = 5;
     public static int TerrainInVoxelSize
@@ -76,5 +76,15 @@ public class Coord
     {
         X = x;
         Z = z;
+    }
+
+    public bool Equals(Coord other)
+    {
+        if (other == null)
+            return false;
+        else if (other.X == X && other.Z == Z)
+            return true;
+        else
+            return false;
     }
 }

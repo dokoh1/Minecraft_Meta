@@ -9,6 +9,13 @@ public enum BlockTypeEnum
     Dirt,
     Grass,
     OakWood,
+    BedRock,
+    Sand,
+    Snow,
+    Diamond,
+    Gold,
+    Iron,
+    Coal,
 }
 
 [DefaultExecutionOrder(-2000)]
