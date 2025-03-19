@@ -1,17 +1,25 @@
+using System.Collections.Generic;
+using Unity.Mathematics;
 using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Serialization;
 
 public class MinecraftTerrain : MonoBehaviour
 {
     public BlockData blockData;
+    public BiomeData biomeData;
     public Transform player;
+    public int seed;
     
     private Chunk[,] _chunks = new Chunk[VoxelData.TerrainSize, VoxelData.TerrainSize];
+    private List<Coord> activeChunks = new List<Coord>();
     private Vector3 _spawnPosition;
+    private Coord _playerPreviousPosition;
     
-    private void Awake()
+    private void Start()
     {
+        // Random.InitState(seed);
         _spawnPosition = new Vector3
             ((VoxelData.TerrainSize * VoxelData.ChunkWidth) / 2, 
             VoxelData.ChunkHeight + 2,
@@ -19,21 +27,56 @@ public class MinecraftTerrain : MonoBehaviour
         player.transform.position = _spawnPosition;
         
         GenerateWorld();
+        _playerPreviousPosition = Vector3ToCoord(player.position);
     }
     
     private void Update()
     {
-        GenerateChunkAroundPlayer();
+        if (!Vector3ToCoord(player.position).Equals(_playerPreviousPosition))
+            GenerateChunkAroundPlayer();
     }
 
-    public BlockTypeEnum BlockCondition(Vector3 pos)
+    public BlockTypeEnum TerrainCondition(Vector3 pos)
     {
+        int yPos = Mathf.FloorToInt(pos.y);
+        var hillsBiome = biomeData.BiomeTypeDictionary[BiomeTypeEnum.Hills];
+        // 월드 사이즈 넘는 곳은 air 블록을 배치한다.
         if (IsVoxelInTerrain(pos))
+            return BlockTypeEnum.Air; 
+        
+        // 맨 밑에는 배드락
+        if (yPos == 0)
+            return BlockTypeEnum.BedRock;
+        
+        //펄린 노이즈
+        int terrainHeight = Mathf.FloorToInt(hillsBiome.terrainHeight * CustomNoise.Get2DPerlin(new Vector2(pos.x, pos.z), 500, 
+            hillsBiome.terrainScale) + hillsBiome.solidGroundHeight);
+        
+        BlockTypeEnum voxelValue = BlockTypeEnum.Air;
+        
+        if (yPos == terrainHeight)
+            voxelValue =  BlockTypeEnum.Grass;
+        else if (yPos < terrainHeight && yPos > terrainHeight - 4)
+            return BlockTypeEnum.Dirt;
+        else if (yPos > terrainHeight)
             return BlockTypeEnum.Air;
-        if (pos.y == VoxelData.ChunkHeight - 1)
-            return BlockTypeEnum.Grass;
         else
-            return BlockTypeEnum.Stone;
+            voxelValue = BlockTypeEnum.Stone;
+
+        if (voxelValue == BlockTypeEnum.Stone)
+        {
+            foreach (Load lode in hillsBiome.loads)
+            {
+                if (yPos > lode.MinHeight && yPos < lode.MaxHeight)
+                    if (CustomNoise.Get3DPerlin(pos, lode.noiseOffset, lode.Scale, lode.threshold))
+                        return lode.blockType;
+            }
+        }
+        return voxelValue;
+        // if (pos.y == VoxelData.ChunkHeight - 1)
+        //     return BlockTypeEnum.Grass;
+        // else
+        //     return BlockTypeEnum.Stone;
     }
     
     void GenerateWorld()
@@ -47,7 +90,6 @@ public class MinecraftTerrain : MonoBehaviour
         }
     }
     
-
     Coord Vector3ToCoord(Vector3 pos)
     {
         int x = Mathf.FloorToInt(pos.x) / VoxelData.ChunkWidth;
@@ -59,6 +101,7 @@ public class MinecraftTerrain : MonoBehaviour
     void GenerateChunkAroundPlayer()
     {
         Coord playerPos = Vector3ToCoord(player.transform.position);
+        List<Coord> previousActiveChunk = new List<Coord>(activeChunks);
         for (int x = playerPos.X - VoxelData.ViewDistance; x < playerPos.X + VoxelData.ViewDistance; x++)
         {
             for (int z = playerPos.Z - VoxelData.ViewDistance; z < playerPos.Z + VoxelData.ViewDistance; z++)
@@ -69,15 +112,29 @@ public class MinecraftTerrain : MonoBehaviour
                     {
                         CreateNewChunk(x, z);
                     }
+                    else if (!_chunks[x, z].isActive)
+                    {
+                        _chunks[x, z].isActive = true;
+                        activeChunks.Add(new Coord(x, z));
+                    }
+                }
+                // 현프레임에서 ActiveChunk와 비교해서 그대로 있다면 해당 청크는 계속 유지
+                for (int i = 0; i < previousActiveChunk.Count; i++)
+                {
+                    if (previousActiveChunk[i].Equals(new Coord(x, z)))
+                        previousActiveChunk.RemoveAt(i);
                 }
             }
         }
+        // 현 프레임에서 전 프레임에서 비교했을때 ActiveChunk가 아닌 것들을 false를 한다.
+        foreach (Coord c in previousActiveChunk)
+            _chunks[c.X, c.Z].isActive = false;
     }
     
     void CreateNewChunk(int x, int z)
     {
-        Coord coord = new Coord(x, z);
-        _chunks[x, z] = new Chunk(coord, blockData, this);
+        _chunks[x, z] = new Chunk(new Coord(x, z), blockData, this);
+        activeChunks.Add(new Coord(x, z));
     }
     
     bool IsChunkInWorld(int x, int z) 
@@ -100,75 +157,3 @@ public class MinecraftTerrain : MonoBehaviour
             return true;
     }
 }
-// player 이동 감지를 안하는 Terrain 생성
-// public class MinecraftTerrain : MonoBehaviour
-// {
-//
-//     public BlockData blockData;
-//
-//     
-//     private Chunk[,] _chunks = new Chunk[VoxelData.TerrainSize, VoxelData.TerrainSize];
-//
-//     
-//     private void Awake()
-//     {
-//         GenerateWorld();
-//     }
-//     
-//
-//     public BlockTypeEnum BlockCondition(Vector3 pos)
-//     {
-//         if (IsVoxelInTerrain(pos))
-//             return BlockTypeEnum.Air;
-//         if (pos.y == VoxelData.ChunkHeight - 1)
-//             return BlockTypeEnum.Grass;
-//         else
-//             return BlockTypeEnum.Stone;
-//     }
-//     
-//     
-//     void GenerateWorld()
-//     {
-//         for (int x = 0; x < VoxelData.TerrainSize; x++)
-//         {
-//             for (int z = 0; z < VoxelData.TerrainSize; z++)
-//             {
-//                 CreateNewChunk(x, z);
-//             }
-//         }
-//     }
-//
-//     Coord Vector3ToCoord(Vector3 pos)
-//     {
-//         int x = Mathf.FloorToInt(pos.x) / VoxelData.ChunkWidth;
-//         int z = Mathf.FloorToInt(pos.z) / VoxelData.ChunkDepth;
-//
-//         return new Coord(x, z);
-//     }
-//     
-//     void CreateNewChunk(int x, int z)
-//     {
-//         Coord coord = new Coord(x, z);
-//         _chunks[x, z] = new Chunk(coord, blockData, this);
-//     }
-//     
-//     bool IsChunkInWorld(int x, int z) 
-//     {
-//         if (x > 0 && x < VoxelData.TerrainSize - 1 && z > 0 && z < VoxelData.TerrainSize - 1)
-//             return true;
-//         else
-//             return false;
-//     }
-//
-//     public bool IsVoxelInTerrain(Vector3 pos)
-//     {
-//         if (pos.x >= 0 && pos.x < VoxelData.TerrainInVoxelSize && 
-//             pos.y < VoxelData.ChunkHeight && pos.y >= 0 &&
-//             pos.z >= 0 && pos.z < VoxelData.TerrainInVoxelSize)
-//         {
-//             return false;
-//         }
-//         else
-//             return true;
-//     }
-// }

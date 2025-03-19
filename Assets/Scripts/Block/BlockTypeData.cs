@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-[CreateAssetMenu(fileName = "BlockTypeData", menuName = "Block/BlockTypeData")]
+[CreateAssetMenu(fileName = "BlockTypeData", menuName = "Minecraft/BlockTypeData")]
 public class BlockTypeData : ScriptableObject
 {
 
