@@ -11,7 +11,7 @@ public class Chunk
     private MeshFilter _meshFilter;
     
     private int _vertexIndex = 0;
-    private readonly BlockTypeEnum[,,] _blockNames = new BlockTypeEnum[16, 16, 16];
+    private readonly BlockTypeEnum[,,] _blockNames = new BlockTypeEnum[16,256, 16];
     
     private readonly List<Vector3> _vertices = new();
     private readonly List<int> _indices = new();
@@ -35,7 +35,18 @@ public class Chunk
         CreateVoxelChunk();
         CreateMesh();
     }
-    
+
+    public bool isActive
+    {
+        get 
+        {
+            return _chunkObject.activeSelf;
+        }
+        set
+        {
+            _chunkObject.SetActive(value);
+        }
+    }
     void ChunkTypeSetting()
     {
 
@@ -45,7 +56,7 @@ public class Chunk
             {
                 for (int z = 0; z < VoxelData.ChunkDepth; z++)
                 {
-                        _blockNames[x, y, z] = _terrain.BlockCondition(new Vector3(x, y, z) + _chunkObject.transform.position);
+                        _blockNames[x, y, z] = _terrain.TerrainCondition(new Vector3(x, y, z) + _chunkObject.transform.position);
                 }
             }
         }
@@ -65,7 +76,7 @@ public class Chunk
         if (x < 0 || x > VoxelData.ChunkWidth - 1 ||
             y < 0 || y > VoxelData.ChunkHeight - 1 ||
             z < 0 || z > VoxelData.ChunkDepth - 1)
-            return BlockData.BlockTypeDictionary[_terrain.BlockCondition(new Vector3(x, y, z) + _chunkObject.transform.position)].isSolid;
+            return BlockData.BlockTypeDictionary[_terrain.TerrainCondition(new Vector3(x, y, z) + _chunkObject.transform.position)].isSolid;
         
         return BlockData.BlockTypeDictionary[_blockNames[x, y, z]].isSolid;
     }
@@ -78,6 +89,7 @@ public class Chunk
             {
                 for (int z = 0; z < VoxelData.ChunkDepth; z++)
                 {
+                    if (BlockData.BlockTypeDictionary[_blockNames[x,y,z]].isSolid)
                     AddVoxelChunk(new Vector3(x, y, z));
                 }
             }
