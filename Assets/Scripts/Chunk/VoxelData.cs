@@ -7,7 +7,7 @@ public static class VoxelData
     public static readonly int ChunkHeight = 256;
 
     public static readonly int TextureAtlasSize = 16;
-    public static readonly int TerrainSize = 10;
+    public static readonly int TerrainSize = 100;
 
     public static readonly int ViewDistance = 5;
     public static int TerrainInVoxelSize

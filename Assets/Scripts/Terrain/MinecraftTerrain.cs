@@ -4,35 +4,43 @@ using Unity.VisualScripting;
 using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 public class MinecraftTerrain : MonoBehaviour
 {
     public BlockData blockData;
     public BiomeData biomeData;
     public Transform player;
+    //seed 값
     public int seed;
-    
-    private Chunk[,] _chunks = new Chunk[VoxelData.TerrainSize, VoxelData.TerrainSize];
-    private List<Coord> activeChunks = new List<Coord>();
+    //캐릭터 spawn 포지션
     private Vector3 _spawnPosition;
-    private Coord _playerPreviousPosition;
+    // 청크 생성
+    private Chunk[,] _chunks = new Chunk[VoxelData.TerrainSize, VoxelData.TerrainSize];
+    // 이전 프레임과 이후 프레임의 Coord를 비교하여 Active를 설정하기 위한 List
+    private List<Coord> activeChunks = new List<Coord>();
+    //프레임 전 후 player의 Coord(x, z) 위치
+    private Coord _playerPreviousCoord;
+    private Coord _playerCoord;
     
     private void Start()
     {
-        // Random.InitState(seed);
+        Random.InitState(seed);
         _spawnPosition = new Vector3
             ((VoxelData.TerrainSize * VoxelData.ChunkWidth) / 2, 
-            VoxelData.ChunkHeight + 2,
+            VoxelData.ChunkHeight - 200,
             (VoxelData.TerrainSize * VoxelData.ChunkDepth) / 2);
         player.transform.position = _spawnPosition;
         
         GenerateWorld();
-        _playerPreviousPosition = Vector3ToCoord(player.position);
+        _playerCoord = Vector3ToCoord(player.position);
+        _playerPreviousCoord = _playerCoord;
     }
     
     private void Update()
     {
-        if (!Vector3ToCoord(player.position).Equals(_playerPreviousPosition))
+        _playerCoord = Vector3ToCoord(player.position);
+        if (!_playerCoord.Equals(_playerPreviousCoord))
             GenerateChunkAroundPlayer();
     }
 
@@ -101,6 +109,7 @@ public class MinecraftTerrain : MonoBehaviour
     void GenerateChunkAroundPlayer()
     {
         Coord playerPos = Vector3ToCoord(player.transform.position);
+        _playerCoord = _playerPreviousCoord;
         List<Coord> previousActiveChunk = new List<Coord>(activeChunks);
         for (int x = playerPos.X - VoxelData.ViewDistance; x < playerPos.X + VoxelData.ViewDistance; x++)
         {
