@@ -16,4 +16,11 @@ MonoBehaviour:
   solidGroundHeight: 42
   terrainHeight: 42
   terrainScale: 0.25
-  loads: []
+  loads:
+  - blockName: 
+    blockType: 0
+    MinHeight: 0
+    MaxHeight: 0
+    Scale: 0
+    threshold: 0
+    noiseOffset: 0

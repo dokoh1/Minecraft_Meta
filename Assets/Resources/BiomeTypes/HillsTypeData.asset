@@ -43,7 +43,7 @@ MonoBehaviour:
     MinHeight: 1
     MaxHeight: 128
     Scale: 0.08
-    threshold: 0.7
+    threshold: 0.8
     noiseOffset: 0
   - blockName: Sand
     blockType: 7

@@ -9,6 +9,7 @@ public class Chunk
     private GameObject _chunkObject;
     private MeshRenderer _renderer;
     private MeshFilter _meshFilter;
+    private MeshCollider _meshColider;
     
     private int _vertexIndex = 0;
     private readonly BlockTypeEnum[,,] _blockNames = new BlockTypeEnum[16,256, 16];
@@ -25,6 +26,7 @@ public class Chunk
         BlockData = blockData;
         _meshFilter = _chunkObject.AddComponent<MeshFilter>();
         _renderer = _chunkObject.AddComponent<MeshRenderer>();
+        _meshColider = _chunkObject.AddComponent<MeshCollider>();
         _terrain = terrain;
         
         _renderer.material = blockData._material;
@@ -34,6 +36,8 @@ public class Chunk
         ChunkTypeSetting();
         CreateVoxelChunk();
         CreateMesh();
+        
+        _meshColider.sharedMesh = _meshFilter.mesh;
     }
 
     public bool isActive
