@@ -21,7 +21,9 @@ using UnityEditor;
 // */
 //
 // 드래그 앤 드롭 두번째 코드(복사한 이미지 드래그 가능)
-/*
+
+//이미지 복사해서 다른 슬롯 옮기는 것까지는 되는 코드
+
 public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     //필드 변수
@@ -63,34 +65,25 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         //Debug.Log(eventData.position);
         // 아이템 복제하여 드래그 가능하도록 설정
         
-        copyItem = Instantiate(gameObject, transform.position, Quaternion.identity,transform.root);
+        copyItem = Instantiate(gameObject, transform.position, Quaternion.identity, transform.root);
+        var originalRT = transform as RectTransform;
+        var rt = copyItem.transform as RectTransform;
+        rt.sizeDelta = originalRT.sizeDelta;
+
         copyImage = copyItem.GetComponent<Image>();
-        
         //GameObject copyObject = Instantiate(gameObject, transform.position,Quaternion.identity,transform.root);
        
         //copyItem.GetComponent<Image>().raycastTarget = false;
         
         //copyItem.GetComponent<InventoryItem>().originalParent = null;
 
-        if (copyImage != null)
+        if (copyItem != null)
         {
             copyImage.sprite = image.sprite;
+            Debug.Log($"복사된 이미지의 스프라이트 설정 완료: {copyImage.sprite.name}");
             copyImage.raycastTarget = false;
             
             copyItem.transform.SetParent(transform.root, true);
-            copyItem.transform.SetAsLastSibling();
-
-            //copyItem.transform.localScale = Vector3.one;
-            //RectTransform rect = copyItem.GetComponent<RectTransform>();
-            //rect.sizeDelta = new Vector2(40,40);
-            
-            
-            //Color tempColor = copyImage.color;
-            //tempColor.a = 1f;
-            //copyImage.color = tempColor;
-            
-            copyImage.raycastTarget = true;
-            //Debug.Log($"드래그 시작 - copyItem 위치: {copyItem.transform.position}, 크기: {rect.sizeDelta}, alpha: {copyImage.color.a}");
         }
         
         //디버그
@@ -115,61 +108,32 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         if (copyItem != null)
         {
             copyItem.transform.position = Input.mousePosition;
-            Debug.Log($"드래그 중: {copyItem.transform.position}"); // 디버그 메시지 추가
         }
     }
 
     //마우스 버튼을 놓을 때 호출.(드래그 종료)
     public void OnEndDrag(PointerEventData eventData)
     {
+        
         GameObject dropTarget = eventData.pointerEnter;
-        if (dropTarget != null)
-        {
-            // 부모 계층에서 InventorySlot 탐색
-            InventorySlot slot = dropTarget.GetComponentInParent<InventorySlot>();
 
-            if (slot != null)
-            {
-                copyItem.transform.SetParent(slot.transform);
-                parentAfterDrag = slot.transform;
-                Debug.Log($"드롭 성공! 슬롯 이름: {slot.name}");
-            }
-            else
-            {
-                copyItem.transform.SetParent(originalParent);
-                Debug.Log("드롭한 위치에 InventorySlot 컴포넌트를 가진 부모가 없음. 원래 부모로 복귀.");
-            }
+        if (dropTarget != null && dropTarget.GetComponent<InventorySlot>())
+        {
+            copyItem.transform.SetParent(dropTarget.transform);
+            parentAfterDrag = dropTarget.transform;
         }
+        //dropTarget 이 null이 아닐 때 이미지를 부수면 됨.
         else
         {
-            copyItem.transform.SetParent(originalParent);
-            Debug.Log("드롭 대상 자체가 없음. 원래 부모로 복귀.");
+            Destroy(copyItem.gameObject);
         }
-//         
-//         GameObject dropTarget = eventData.pointerEnter;
-//
-//         if (dropTarget != null && dropTarget.GetComponent<InventorySlot>())
-//         {
-//             copyItem.transform.SetParent(dropTarget.transform);
-//             parentAfterDrag = dropTarget.transform;
-//             Debug.Log($"드롭 성공! 새로운 부모: {dropTarget.name}");
-//         }
-//         else
-//         {
-//             copyItem.transform.SetParent(originalParent);
-//             Debug.Log("드롭한 위치가 슬롯이 아님. 원래 부모로 복귀.");
-//         }
-//         
-//         copyItem.GetComponent<Image>().raycastTarget = true;  
-//         
+        
+        copyItem.GetComponent<Image>().raycastTarget = true;  
     }
     
-    
 }
-*/
 
-//이미지 복사해서 다른 슬롯 옮기는 것까지는 되는 코드
-
+/*
 public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     //필드 변수
@@ -277,8 +241,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     }
     
 }
-
-
+ */
 
 /*
 public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
