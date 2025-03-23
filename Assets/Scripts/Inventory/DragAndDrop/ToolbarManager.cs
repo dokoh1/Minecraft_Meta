@@ -22,6 +22,9 @@ public class ToolbarManager : MonoBehaviour
       {
          if (Input.GetKeyDown(KeyCode.Alpha1 + i))
          {
+            SelectSlot(i);
+            
+            /*
             currentSlotIndex = i;
 
             if (highlight != null && currentSlotIndex < toolbarSlots.Length)
@@ -30,9 +33,20 @@ public class ToolbarManager : MonoBehaviour
             }
 
             Debug.Log($"🔹 선택된 슬롯: {currentSlotIndex + 1}, 아이템 ID: {toolbarSlots[currentSlotIndex].itemID}");
+            */
          }
       }
    }
+
+   public void SelectSlot(int index)
+   {
+      if(index < 0 || index >= toolbarSlots.Length) return;
+      
+      currentSlotIndex = index;
+      highlight.position = toolbarSlots[currentSlotIndex].transform.position;
+      Debug.Log($"[Toolbar] 선택된 슬롯: {currentSlotIndex + 1}, 아이템 ID: {toolbarSlots[currentSlotIndex].itemID}");
+   }
+   
 
    // 외부에서 현재 선택된 블럭 ID를 가져올 수 있도록
    public byte GetSelectedItemID()
