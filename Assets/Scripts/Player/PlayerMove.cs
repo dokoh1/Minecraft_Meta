@@ -14,9 +14,10 @@ public class PlayerMove : MonoBehaviour
     private float _walkSpeed = 3f;
     private float _runSpeed = 6f;
     private float _mouseSpeed = 300f;
-    private float _jumpForce = 4.5f;
+    private float _jumpForce = 10f;
     private float _playerHeight = 2f;
     private bool _mouseLockHide = true;
+    private bool _isGravity = false;
     
     void Start()
     {
@@ -26,6 +27,7 @@ public class PlayerMove : MonoBehaviour
         _rigidbody.freezeRotation = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        _rigidbody.useGravity = false;
     }
     
     private void Update()
@@ -36,6 +38,20 @@ public class PlayerMove : MonoBehaviour
             var grounded = Physics.Raycast(player.transform.position, Vector3.down, _playerHeight * 0.5f + 0.2f);
             if (Input.GetKeyDown(KeyCode.Space) && grounded)
                 Jump();
+        }
+
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            if (_isGravity == false)
+            {
+                _rigidbody.useGravity = true;
+                _isGravity = true;
+            }
+            else if (_isGravity == true)
+            {
+                _rigidbody.useGravity = false;
+                _isGravity = true;
+            }
         }
 
         SetCursorLock();

@@ -19,19 +19,28 @@ public class Chunk
     private readonly List<Vector2> _uvs = new();
 
     private MinecraftTerrain _terrain;
-    public Chunk(Coord coord, BlockData blockData, MinecraftTerrain terrain)
+    private bool _isActive;
+    public bool isVoxelMapPopulated = false;
+    public Chunk(Coord coord, BlockData blockData, MinecraftTerrain terrain, bool OnLoad)
     {
         _coord = coord;
-        _chunkObject = new GameObject();
         BlockData = blockData;
+        _terrain = terrain;
+        isActive = true;
+        if (OnLoad)
+            Init();
+    }
+
+    public void Init()
+    {
+        _chunkObject = new GameObject();
         _meshFilter = _chunkObject.AddComponent<MeshFilter>();
         _renderer = _chunkObject.AddComponent<MeshRenderer>();
         _meshColider = _chunkObject.AddComponent<MeshCollider>();
-        _terrain = terrain;
         
-        _renderer.material = blockData._material;
+        _renderer.material = BlockData._material;
         _chunkObject.transform.SetParent(_terrain.transform);
-        _chunkObject.transform.position = new Vector3(coord.X * VoxelData.ChunkWidth, 0f, coord.Z * VoxelData.ChunkDepth);
+        _chunkObject.transform.position = new Vector3(_coord.X_int * VoxelData.ChunkWidth, 0f, _coord.Z_int * VoxelData.ChunkDepth);
         
         ChunkTypeSetting();
         CreateVoxelChunk();
@@ -42,32 +51,37 @@ public class Chunk
 
     public bool isActive
     {
-        get 
+        get
         {
-            return _chunkObject.activeSelf;
+            return _isActive;
         }
         set
         {
-            _chunkObject.SetActive(value);
+            _isActive = value;
+            if (_chunkObject != null)
+                _chunkObject.SetActive(value);
         }
     }
     void ChunkTypeSetting()
     {
-
         for (int y = 0; y < VoxelData.ChunkHeight; y++)
         {
             for (int x = 0; x < VoxelData.ChunkWidth; x++)
             {
                 for (int z = 0; z < VoxelData.ChunkDepth; z++)
                 {
+                    //청크의 내부 좌표가 아닌 월드 좌표를 구하기 위해서 더해준다.
                         _blockNames[x, y, z] = _terrain.TerrainCondition(new Vector3(x, y, z) + _chunkObject.transform.position);
                 }
             }
         }
+        isVoxelMapPopulated = true;
     }
-
+    
+    
+    
     /// <summary>
-    /// 정육면체의 면이 내부에 있는 면인지 외부에 있는 면인지 확인하는 함수
+    /// Voxel이 생성되어야할지 말아야할지 판단하는 함수
     /// </summary>
     /// <param name="pos">위치</param>
     /// <returns></returns>
@@ -80,11 +94,11 @@ public class Chunk
         if (x < 0 || x > VoxelData.ChunkWidth - 1 ||
             y < 0 || y > VoxelData.ChunkHeight - 1 ||
             z < 0 || z > VoxelData.ChunkDepth - 1)
-            return BlockData.BlockTypeDictionary[_terrain.TerrainCondition(new Vector3(x, y, z) + _chunkObject.transform.position)].isSolid;
+            return _terrain.CheckVoxel(pos + _chunkObject.transform.position);
         
         return BlockData.BlockTypeDictionary[_blockNames[x, y, z]].isSolid;
     }
-
+    
     void CreateVoxelChunk()
     {
         for (int y = 0; y < VoxelData.ChunkHeight; y++)
@@ -94,11 +108,23 @@ public class Chunk
                 for (int z = 0; z < VoxelData.ChunkDepth; z++)
                 {
                     if (BlockData.BlockTypeDictionary[_blockNames[x,y,z]].isSolid)
-                    AddVoxelChunk(new Vector3(x, y, z));
+                        AddVoxelChunk(new Vector3(x, y, z));
                 }
             }
         }
     }
+
+    public BlockTypeEnum GetVoxelFromVector(Vector3 vector)
+    {
+        int xCheck = Mathf.FloorToInt(vector.x);
+        int yCheck = Mathf.FloorToInt(vector.y);
+        int zCheck = Mathf.FloorToInt(vector.z);
+        
+        xCheck -= Mathf.FloorToInt(_chunkObject.transform.position.x);
+        zCheck -= Mathf.FloorToInt(_chunkObject.transform.position.z);
+        return _blockNames[xCheck, yCheck, zCheck];
+    }
+    
     /// <summary>
     /// Voxel의 Vertex 정보 및 index정보 및 uv 정보를 넣는다.
     /// </summary>
@@ -162,4 +188,3 @@ public class Chunk
         _uvs.Add(new Vector2(x + VoxelData.NormalizedBlockTextureSize, y + VoxelData.NormalizedBlockTextureSize));
     }
 }
-

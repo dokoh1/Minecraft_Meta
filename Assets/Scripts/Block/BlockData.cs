@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.VisualScripting.Dependencies.NCalc;
 
 public enum BlockTypeEnum
 {
@@ -17,6 +18,7 @@ public enum BlockTypeEnum
     Iron,
     Coal,
 }
+
 
 [DefaultExecutionOrder(-2000)]
 public class BlockData : MonoBehaviour
@@ -45,3 +47,4 @@ public class BlockData : MonoBehaviour
         }
     }
 }
+

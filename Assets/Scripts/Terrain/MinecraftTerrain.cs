@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using Unity.VisualScripting;
@@ -19,16 +20,23 @@ public class MinecraftTerrain : MonoBehaviour
     private Chunk[,] _chunks = new Chunk[VoxelData.TerrainSize, VoxelData.TerrainSize];
     // 이전 프레임과 이후 프레임의 Coord를 비교하여 Active를 설정하기 위한 List
     private List<Coord> activeChunks = new List<Coord>();
+
+    private List<Coord> previousActiveChunk;
     //프레임 전 후 player의 Coord(x, z) 위치
     private Coord _playerPreviousCoord;
-    private Coord _playerCoord;
+    public Coord _playerCoord;
+    
+    List<Coord> chunksToCreate = new List<Coord>();
+    private bool isCreating;
+    public GameObject debugUI;
     
     private void Start()
     {
         Random.InitState(seed);
+        previousActiveChunk = new List<Coord>();
         _spawnPosition = new Vector3
             ((VoxelData.TerrainSize * VoxelData.ChunkWidth) / 2, 
-            VoxelData.ChunkHeight - 200,
+            VoxelData.ChunkHeight - 100,
             (VoxelData.TerrainSize * VoxelData.ChunkDepth) / 2);
         player.transform.position = _spawnPosition;
         
@@ -42,8 +50,84 @@ public class MinecraftTerrain : MonoBehaviour
         _playerCoord = Vector3ToCoord(player.position);
         if (!_playerCoord.Equals(_playerPreviousCoord))
             GenerateChunkAroundPlayer();
+        
+        if (chunksToCreate.Count > 0 && !isCreating)
+            StartCoroutine(CreateChunks());
+        
+        if (Input.GetKeyDown(KeyCode.F3))
+        {
+            debugUI.SetActive(!debugUI.activeSelf);
+        }
     }
 
+    void GenerateWorld()
+    {
+        for (int x = (VoxelData.TerrainSize / 2) - VoxelData.InitSize; x < (VoxelData.TerrainSize / 2) + VoxelData.InitSize; x++)
+        {
+            for (int z = (VoxelData.TerrainSize / 2) - VoxelData.InitSize; z < (VoxelData.TerrainSize / 2) + VoxelData.InitSize; z++)
+            {
+                _chunks[x, z] = new Chunk(new Coord(x, z),this.blockData, this, true);
+                activeChunks.Add(new Coord(x, z));
+            }
+        }
+        // for (int x = 0; x < VoxelData.InitSize; x++)
+        // {
+        //     for (int z = 0; z < VoxelData.InitSize; z++)
+        //     {
+        //         _chunks[x, z] = new Chunk(new Coord(x, z),this.blockData, this, true);
+        //         activeChunks.Add(new Coord(x, z));
+        //     }
+        // }
+    }
+    void GenerateChunkAroundPlayer()
+    {
+        Coord playerPos = Vector3ToCoord(player.transform.position);
+        _playerCoord = _playerPreviousCoord;
+        previousActiveChunk = activeChunks;
+        for (int x = playerPos.X_int - VoxelData.ViewDistance; x < playerPos.X_int + VoxelData.ViewDistance; x++)
+        {
+            for (int z = playerPos.Z_int - VoxelData.ViewDistance; z < playerPos.Z_int + VoxelData.ViewDistance; z++)
+            {
+                Coord ChunkCoord = new Coord(x, z);
+                if (IsChunkInWorld(x, z))
+                {
+                    if (_chunks[x, z] == null)
+                    {
+                        _chunks[x, z] = new Chunk(ChunkCoord, this.blockData, this, false);
+                        chunksToCreate.Add(new Coord(x, z));
+                    }
+                    else if (!_chunks[x, z].isActive)
+                    {
+                        _chunks[x, z].isActive = true;
+                    }
+                    activeChunks.Add(new Coord(x, z));
+                }
+                // 현프레임에서 ActiveChunk와 비교해서 그대로 있다면 해당 청크는 계속 유지
+                for (int i = 0; i < previousActiveChunk.Count; i++)
+                {
+                    if (previousActiveChunk[i].Equals(ChunkCoord))
+                        previousActiveChunk.RemoveAt(i);
+                }
+            }
+        }
+        // 현 프레임에서 전 프레임에서 비교했을때 ActiveChunk가 아닌 것들을 false를 한다.
+        foreach (Coord c in previousActiveChunk)
+            _chunks[c.X_int, c.Z_int].isActive = false;
+    }
+
+    IEnumerator CreateChunks()
+    {
+        isCreating = true;
+        while (chunksToCreate.Count > 0)
+        {
+            _chunks[chunksToCreate[0].X_int, chunksToCreate[0].Z_int].Init();
+            chunksToCreate.RemoveAt(0);
+            yield return null;
+
+        }
+
+        isCreating = false;
+    }
     public BlockTypeEnum TerrainCondition(Vector3 pos)
     {
         int yPos = Mathf.FloorToInt(pos.y);
@@ -87,15 +171,19 @@ public class MinecraftTerrain : MonoBehaviour
         //     return BlockTypeEnum.Stone;
     }
     
-    void GenerateWorld()
+
+    public bool CheckVoxel(Vector3 pos)
     {
-        for (int x = (VoxelData.TerrainSize / 2) - VoxelData.ViewDistance; x < (VoxelData.TerrainSize / 2) + VoxelData.ViewDistance; x++)
-        {
-            for (int z = (VoxelData.TerrainSize / 2) - VoxelData.ViewDistance; z < (VoxelData.TerrainSize / 2) + VoxelData.ViewDistance; z++)
-            {
-                CreateNewChunk(x, z);
-            }
-        }
+        Coord thisChunk = new Coord(pos);
+
+        if (!IsChunkInWorld(thisChunk.X_int, thisChunk.Z_int) || pos.y < 0 || pos.y > VoxelData.ChunkHeight) 
+            return false;
+
+        if (_chunks[thisChunk.X_int, thisChunk.Z_int] != null && _chunks[thisChunk.X_int, thisChunk.Z_int].isVoxelMapPopulated)
+            return blockData.BlockTypeDictionary[_chunks[thisChunk.X_int, thisChunk.Z_int].GetVoxelFromVector(pos)].isSolid;
+
+        return blockData.BlockTypeDictionary[TerrainCondition(pos)].isSolid;
+
     }
     
     Coord Vector3ToCoord(Vector3 pos)
@@ -106,45 +194,12 @@ public class MinecraftTerrain : MonoBehaviour
         return new Coord(x, z);
     }
     
-    void GenerateChunkAroundPlayer()
-    {
-        Coord playerPos = Vector3ToCoord(player.transform.position);
-        _playerCoord = _playerPreviousCoord;
-        List<Coord> previousActiveChunk = new List<Coord>(activeChunks);
-        for (int x = playerPos.X - VoxelData.ViewDistance; x < playerPos.X + VoxelData.ViewDistance; x++)
-        {
-            for (int z = playerPos.Z - VoxelData.ViewDistance; z < playerPos.Z + VoxelData.ViewDistance; z++)
-            {
-                if (IsChunkInWorld(x, z))
-                {
-                    if (_chunks[x, z] == null)
-                    {
-                        CreateNewChunk(x, z);
-                    }
-                    else if (!_chunks[x, z].isActive)
-                    {
-                        _chunks[x, z].isActive = true;
-                        activeChunks.Add(new Coord(x, z));
-                    }
-                }
-                // 현프레임에서 ActiveChunk와 비교해서 그대로 있다면 해당 청크는 계속 유지
-                for (int i = 0; i < previousActiveChunk.Count; i++)
-                {
-                    if (previousActiveChunk[i].Equals(new Coord(x, z)))
-                        previousActiveChunk.RemoveAt(i);
-                }
-            }
-        }
-        // 현 프레임에서 전 프레임에서 비교했을때 ActiveChunk가 아닌 것들을 false를 한다.
-        foreach (Coord c in previousActiveChunk)
-            _chunks[c.X, c.Z].isActive = false;
-    }
     
-    void CreateNewChunk(int x, int z)
-    {
-        _chunks[x, z] = new Chunk(new Coord(x, z), blockData, this);
-        activeChunks.Add(new Coord(x, z));
-    }
+    // void CreateNewChunk(int x, int z)
+    // {
+    //     _chunks[x, z] = new Chunk(new Coord(x, z), blockData, this);
+    //     activeChunks.Add(new Coord(x, z));
+    // }
     
     bool IsChunkInWorld(int x, int z) 
     {
@@ -166,3 +221,6 @@ public class MinecraftTerrain : MonoBehaviour
             return true;
     }
 }
+
+
+
