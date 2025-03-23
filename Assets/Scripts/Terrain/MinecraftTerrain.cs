@@ -36,7 +36,7 @@ public class MinecraftTerrain : MonoBehaviour
         previousActiveChunk = new List<Coord>();
         _spawnPosition = new Vector3
             ((VoxelData.TerrainSize * VoxelData.ChunkWidth) / 2, 
-            VoxelData.ChunkHeight - 100,
+            VoxelData.ChunkHeight - 150,
             (VoxelData.TerrainSize * VoxelData.ChunkDepth) / 2);
         player.transform.position = _spawnPosition;
         
@@ -82,7 +82,6 @@ public class MinecraftTerrain : MonoBehaviour
     void GenerateChunkAroundPlayer()
     {
         Coord playerPos = Vector3ToCoord(player.transform.position);
-        _playerCoord = _playerPreviousCoord;
         previousActiveChunk = activeChunks;
         for (int x = playerPos.X_int - VoxelData.ViewDistance; x < playerPos.X_int + VoxelData.ViewDistance; x++)
         {
@@ -192,6 +191,14 @@ public class MinecraftTerrain : MonoBehaviour
         int z = Mathf.FloorToInt(pos.z) / VoxelData.ChunkDepth;
 
         return new Coord(x, z);
+    }
+
+    public Chunk Vector3ToChunk(Vector3 pos)
+    {
+        int x = Mathf.FloorToInt(pos.x) / VoxelData.ChunkWidth;
+        int z = Mathf.FloorToInt(pos.z) / VoxelData.ChunkDepth;
+
+        return _chunks[x, z];
     }
     
     
