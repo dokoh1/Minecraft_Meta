@@ -53,6 +53,7 @@ public class Chunk
         xCheck -= Mathf.FloorToInt(_chunkObject.transform.position.x);
         zCheck -= Mathf.FloorToInt(_chunkObject.transform.position.z);
         _blockNames[xCheck, yCheck, zCheck] = blockType;
+        UpdateAroundChunk(xCheck, yCheck, zCheck);
         UpdateChunk();
     }
 
