@@ -4,7 +4,6 @@ using UnityEngine.Serialization;
 [CreateAssetMenu(fileName = "BlockTypeData", menuName = "Minecraft/BlockTypeData")]
 public class BlockTypeData : ScriptableObject
 {
-
     public bool isSolid;
     public string blockName;
     public int backFaceTexture;

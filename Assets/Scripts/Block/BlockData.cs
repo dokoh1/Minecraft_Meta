@@ -1,23 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public enum BlockTypeEnum
-{
-    Air,
-    Stone,
-    BlackStone,
-    Dirt,
-    Grass,
-    OakWood,
-    BedRock,
-    Sand,
-    Snow,
-    Diamond,
-    Gold,
-    Iron,
-    Coal,
-}
-
 [DefaultExecutionOrder(-2000)]
 public class BlockData : MonoBehaviour
 {
