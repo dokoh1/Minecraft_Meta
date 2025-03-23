@@ -43,6 +43,15 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     //Start()는 유니티에서 객체가 활성화될 때 한 번 호출됨.
     public void Awake()
     {
+        if (image == null)
+            image = GetComponent<Image>();
+
+        // ✅ 그래도 없으면 그냥 중단 (에러 방지)
+        if (image == null)
+        {
+            Debug.LogWarning($"[InventoryItem] image가 연결되어 있지 않음 (오브젝트 이름: {gameObject.name})");
+            return;
+        }
         //raycastTarget이 true이면 이 UI이미지가 마우스 클릭을 받을 수 있음. false면 클릭이 무시됨.
         //UI 이미지가 마우스 클릭을 받을 수 있도록 설정.
         image.raycastTarget = true;
@@ -110,11 +119,103 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             copyItem.transform.position = Input.mousePosition;
         }
     }
-
+    
+    
     //마우스 버튼을 놓을 때 호출.(드래그 종료)
     public void OnEndDrag(PointerEventData eventData)
     {
+        GameObject dropTarget = eventData.pointerEnter;
+
+        if (dropTarget != null && dropTarget.GetComponent<InventorySlot>())
+        {
+            // 드롭 대상 슬롯
+            InventorySlot slot = dropTarget.GetComponent<InventorySlot>();
+
+            // 아이템 타입 얻기
+            BlockTypeEnum blockType = ItemSpriteMapper.Instance.GetBlockTypeFromSprite(copyImage.sprite);
+            byte itemID = (byte)blockType;
+
+            // 드래그된 아이템 UI 옮기기
+            copyItem.transform.SetParent(dropTarget.transform, false);
+            copyItem.transform.localPosition = Vector3.zero;
+            
+            copyImage.raycastTarget = true;
+
+            //드래그 방지: 복사된 아이템에서 InventoryItem 스크립트 제거
+            Destroy(copyItem.GetComponent<InventoryItem>());
+
+            // 슬롯 데이터 저장
+            slot.itemID = itemID;
+            slot.hasBlock = true;
+
+            // PlayerToolbar에도 복제
+            ToolbarMirror.Instance.SyncToolbarSlot(slot.slotIndex, copyImage.sprite, itemID);
+        }
+        else
+        {
+            Destroy(copyItem.gameObject);
+        }
+            /*
+            copyItem.GetComponent<Image>().raycastTarget = true;
+
+            // 메인 툴바 슬롯 정보 저장
+            slot.itemID = itemID;
+            slot.hasBlock = true;
+
+            //PlayerToolbar에도 동기화 시키기
+            ToolbarMirror.Instance.SyncToolbarSlot(slot.slotIndex, copyImage.sprite, itemID);
+        }
+        else
+        {
+            Destroy(copyItem.gameObject);
+        }
+        */
+        /*
+        GameObject dropTarget = eventData.pointerEnter;
+
+        if (dropTarget != null && dropTarget.GetComponent<InventorySlot>())
+        {
+            // 부모만 바꿔주고, 위치 정렬
+            copyItem.transform.SetParent(dropTarget.transform, false);
+            copyItem.transform.localPosition = Vector3.zero;
+
+            // ID 저장은 InventorySlot 쪽에 직접
+            InventorySlot slot = dropTarget.GetComponent<InventorySlot>();
+
+            BlockTypeEnum blockType = ItemSpriteMapper.Instance.GetBlockTypeFromSprite(copyImage.sprite);
+            slot.itemID = (byte)blockType;
+            slot.hasBlock = true;
+        }
+        else
+        {
+            Destroy(copyItem.gameObject);
+        }
+
+        copyItem.GetComponent<Image>().raycastTarget = true;
+        */
+        /*
+        GameObject dropTarget = eventData.pointerEnter;
+        // InventoryItem.OnEndDrag() 내부에서
+        if (dropTarget != null && dropTarget.GetComponent<InventorySlot>())
+        {
+            InventorySlot slot = dropTarget.GetComponent<InventorySlot>();
+            
+            
+            BlockTypeEnum blockType = ItemSpriteMapper.Instance.GetBlockTypeFromSprite(copyImage.sprite);
+            byte itemID = (byte)blockType;
+            
+            slot.SetBlock(copyImage.sprite, itemID);
+
+            copyItem.transform.SetParent(dropTarget.transform);
+            parentAfterDrag = dropTarget.transform;
+        }
         
+        else
+        {
+            Destroy(copyItem.gameObject);
+        }
+        */
+        /*
         GameObject dropTarget = eventData.pointerEnter;
 
         if (dropTarget != null && dropTarget.GetComponent<InventorySlot>())
@@ -129,6 +230,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
         
         copyItem.GetComponent<Image>().raycastTarget = true;  
+        */
     }
     
 }

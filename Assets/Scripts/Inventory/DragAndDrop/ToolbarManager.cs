@@ -3,6 +3,53 @@ using UnityEngine.UI;
 
 public class ToolbarManager : MonoBehaviour
 {
+   public RectTransform highlight;                     // 하이라이트 프레임
+   public InventorySlot[] toolbarSlots;                // 9개의 슬롯
+   private int currentSlotIndex = 0;                   // 현재 선택된 슬롯 인덱스
+
+   private void Start()
+   {
+      // 시작할 때 하이라이트 위치 설정
+      if (highlight != null && toolbarSlots.Length > 0)
+      {
+         highlight.position = toolbarSlots[currentSlotIndex].transform.position;
+      }
+   }
+
+   private void Update()
+   {
+      for (int i = 0; i < 9; i++)
+      {
+         if (Input.GetKeyDown(KeyCode.Alpha1 + i))
+         {
+            currentSlotIndex = i;
+
+            if (highlight != null && currentSlotIndex < toolbarSlots.Length)
+            {
+               highlight.position = toolbarSlots[currentSlotIndex].transform.position;
+            }
+
+            Debug.Log($"🔹 선택된 슬롯: {currentSlotIndex + 1}, 아이템 ID: {toolbarSlots[currentSlotIndex].itemID}");
+         }
+      }
+   }
+
+   // 외부에서 현재 선택된 블럭 ID를 가져올 수 있도록
+   public byte GetSelectedItemID()
+   {
+      return toolbarSlots[currentSlotIndex].itemID;
+   }
+
+   public InventorySlot GetActiveSlot()
+   {
+      return toolbarSlots[currentSlotIndex];
+   }
+}
+
+
+/*
+public class ToolbarManager : MonoBehaviour
+{
    public RectTransform highlight;
    public ItemSlot[] itemSlots;
 
@@ -33,7 +80,7 @@ public class ToolbarManager : MonoBehaviour
       return itemSlots[slotIndex].itemID;
    }
 }
-
+*/
 
 /*
 using UnityEngine;
@@ -70,9 +117,11 @@ public class ToolbarManager : MonoBehaviour
 }
 */
 
+/*
 [System.Serializable]
 public class ItemSlot
 {
    public byte itemID;
    public Image icon;
 }
+*/

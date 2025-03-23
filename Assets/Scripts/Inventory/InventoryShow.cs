@@ -46,7 +46,7 @@ public class InventoryShow : MonoBehaviour
          
          if (!slot.hasBlock)
          {
-            slot.SetBlock(blockIcon);
+            //slot.SetBlock(blockIcon);
             return;
          }
       }

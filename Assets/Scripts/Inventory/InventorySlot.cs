@@ -6,8 +6,31 @@ using Unity.Collections;
 using System.Collections.Generic;
 using TMPro;
 
+public class InventorySlot : MonoBehaviour
+{
+    public Image icon;
+    public bool hasBlock = false;
+    public byte itemID;
+    
+    public int slotIndex;
+    public void SetBlock(Sprite sprite, byte id)
+    {
+        if (icon != null)
+        {
+            icon = GetComponentInChildren<Image>();
+        }
+        icon.sprite = sprite;
+        icon.enabled = true;
+        hasBlock = true;
+        itemID = id;
+        
+        ToolbarMirror.Instance.SyncToolbarSlot(slotIndex, sprite, id);
+    }
+}
+
 //이 클래스는 인벤토리 창에 있는 9개의 Toolbar와
 //인벤토리 창을 닫아도 플레이 도중에 계속 하단에 표시가 되는 Hotbar 를 연동하는 클래스이다.
+/*
 public class InventorySlot : MonoBehaviour
 {
     public GameObject Item;
@@ -29,7 +52,7 @@ public class InventorySlot : MonoBehaviour
         hasBlock = false;
     }
 }
-
+*/
 
 
 /*
