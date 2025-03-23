@@ -46,7 +46,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         if (image == null)
             image = GetComponent<Image>();
 
-        // ✅ 그래도 없으면 그냥 중단 (에러 방지)
+        //그래도 없으면 그냥 중단 (에러 방지)
         if (image == null)
         {
             Debug.LogWarning($"[InventoryItem] image가 연결되어 있지 않음 (오브젝트 이름: {gameObject.name})");
@@ -101,6 +101,14 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             Debug.Log(copyItem.GetComponent<Image>().sprite.name);
             Debug.Log("아이콘 이미지가 복사되었습니다.");
         }
+        
+        // 드래그 시작할 때 하이라이트 맨 위로 올리기
+        ToolbarManager toolbar = FindFirstObjectByType<ToolbarManager>();
+        if (toolbar != null && toolbar.highlight != null)
+        {
+            toolbar.highlight.SetAsLastSibling();
+        }
+
     }
     
     // public void StartDrag()
@@ -155,6 +163,15 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         {
             Destroy(copyItem.gameObject);
         }
+        
+        // 드래그 시작할 때 하이라이트 맨 위로 올리기
+        ToolbarManager toolbar = FindFirstObjectByType<ToolbarManager>();
+        if (toolbar != null && toolbar.highlight != null)
+        {
+            toolbar.highlight.SetAsLastSibling();
+        }
+
+
             /*
             copyItem.GetComponent<Image>().raycastTarget = true;
 

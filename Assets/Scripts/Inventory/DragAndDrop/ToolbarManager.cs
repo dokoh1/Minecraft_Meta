@@ -43,7 +43,12 @@ public class ToolbarManager : MonoBehaviour
       if(index < 0 || index >= toolbarSlots.Length) return;
       
       currentSlotIndex = index;
-      highlight.position = toolbarSlots[currentSlotIndex].transform.position;
+      //슬롯의 월드 좌표 기준으로 위치 설정
+      Vector3 worldPos = toolbarSlots[currentSlotIndex].transform.position;
+      highlight.position = worldPos;
+      //highlight.position = toolbarSlots[currentSlotIndex].transform.position;
+      //항상 맨 위로 올리기 (렌더 순서상 최상단)
+      highlight.SetAsLastSibling();
       Debug.Log($"[Toolbar] 선택된 슬롯: {currentSlotIndex + 1}, 아이템 ID: {toolbarSlots[currentSlotIndex].itemID}");
    }
    
