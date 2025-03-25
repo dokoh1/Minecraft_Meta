@@ -35,8 +35,10 @@ public class DebugText : MonoBehaviour
         sb.AppendLine("CopyCraft");
         sb.AppendLine($"{_frame} fps");
         sb.AppendLine($"XYZ : {Mathf.FloorToInt(player.position.x) - halfVoxels} / {Mathf.FloorToInt(player.position.y)} / {Mathf.FloorToInt(player.position.z) - halfVoxels}");
-        sb.AppendLine($"Chunk : {coord.X_int - halfChunks} / {coord.Z_int - halfChunks}");
+        // sb.AppendLine($"Chunk : {coord.X_int - halfChunks} / {coord.Z_int - halfChunks}");
+        sb.AppendLine($"Chunk : {coord.X_int} / {coord.Z_int}");
         sb.AppendLine("");
+        
         _text.text = sb.ToString();
         // 1초마다 프레임을 출력
         if (_timer > 1f)

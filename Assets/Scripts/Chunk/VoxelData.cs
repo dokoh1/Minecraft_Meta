@@ -8,7 +8,7 @@ public static class VoxelData
 
     public static readonly int TextureAtlasSize = 16;
     public static readonly int TerrainSize = 1000;
-    public static readonly int InitSize = 10;
+    public static readonly int InitSize = 4;
 
     public static int InitInVoxelSize
     {

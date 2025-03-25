@@ -18,6 +18,8 @@ public class Chunk
     private readonly List<Vector3> _vertices = new();
     private readonly List<int> _indices = new();
     private readonly List<Vector2> _uvs = new();
+    List<int> _transparentIndices = new();
+    Material[] _materials = new Material[2];
 
     private MinecraftTerrain _terrain;
     private bool _isActive;
@@ -63,8 +65,10 @@ public class Chunk
         _meshFilter = _chunkObject.AddComponent<MeshFilter>();
         _renderer = _chunkObject.AddComponent<MeshRenderer>();
         _meshColider = _chunkObject.AddComponent<MeshCollider>();
-        
-        _renderer.material = BlockData._material;
+
+        _materials[0] = BlockData._material;
+        _materials[1] = BlockData.transparentMaterial;
+        _renderer.materials = _materials;
         _chunkObject.transform.SetParent(_terrain.transform);
         _chunkObject.transform.position = new Vector3(_coord.X_int * VoxelData.ChunkWidth, 0f, _coord.Z_int * VoxelData.ChunkDepth);
         
@@ -79,6 +83,7 @@ public class Chunk
         _vertices.Clear();
         _indices.Clear();
         _uvs.Clear();
+        _transparentIndices.Clear();
         _meshColider.sharedMesh = null;
     }
     public bool isActive
@@ -126,9 +131,9 @@ public class Chunk
         if (x < 0 || x > VoxelData.ChunkWidth - 1 ||
             y < 0 || y > VoxelData.ChunkHeight - 1 ||
             z < 0 || z > VoxelData.ChunkDepth - 1)
-            return _terrain.CheckVoxel(pos + _chunkObject.transform.position);
+            return _terrain.CheckTransparent(pos + _chunkObject.transform.position);
         
-        return BlockData.BlockTypeDictionary[_blockNames[x, y, z]].isSolid;
+        return BlockData.BlockTypeDictionary[_blockNames[x, y, z]].isTransparent;
     }
     
     void UpdateChunk()
@@ -166,11 +171,12 @@ public class Chunk
     /// <param name="pos"></param>
     void UpdateMeshData(Vector3 pos)
     {
+        BlockTypeEnum blockKey = _blockNames[(int)pos.x, (int)pos.y, (int)pos.z];
+        bool isTransparent = _terrain.blockData.BlockTypeDictionary[blockKey].isTransparent;
         for (int i = 0; i < 6; i++)
         {
-            if (!IsCheckVoxel(pos + VoxelData.FaceChecks[i]))
+            if (IsCheckVoxel(pos + VoxelData.FaceChecks[i]))
             {
-                BlockTypeEnum blockKey = _blockNames[(int)pos.x, (int)pos.y, (int)pos.z];
                 
                 _vertices.Add(pos + VoxelData.VoxelVertes[VoxelData.VoxelIndex[i, 0]]);
                 _vertices.Add(pos + VoxelData.VoxelVertes[VoxelData.VoxelIndex[i, 1]]);
@@ -178,13 +184,25 @@ public class Chunk
                 _vertices.Add(pos + VoxelData.VoxelVertes[VoxelData.VoxelIndex[i, 3]]);
 
                 AddTexture(BlockData.BlockTypeDictionary[blockKey].GetTextureID(i));
-                
-                _indices.Add(_vertexIndex);
-                _indices.Add(_vertexIndex + 1);
-                _indices.Add(_vertexIndex + 2);
-                _indices.Add(_vertexIndex + 2);
-                _indices.Add(_vertexIndex + 1);
-                _indices.Add(_vertexIndex + 3);
+
+                if (!isTransparent)
+                {
+                    _indices.Add(_vertexIndex);
+                    _indices.Add(_vertexIndex + 1);
+                    _indices.Add(_vertexIndex + 2);
+                    _indices.Add(_vertexIndex + 2);
+                    _indices.Add(_vertexIndex + 1);
+                    _indices.Add(_vertexIndex + 3);
+                }
+                else
+                {
+                    _transparentIndices.Add(_vertexIndex);
+                    _transparentIndices.Add(_vertexIndex + 1);
+                    _transparentIndices.Add(_vertexIndex + 2);
+                    _transparentIndices.Add(_vertexIndex + 2);
+                    _transparentIndices.Add(_vertexIndex + 1);
+                    _transparentIndices.Add(_vertexIndex + 3);
+                }
                 _vertexIndex += 4;
             }
         }
@@ -194,12 +212,12 @@ public class Chunk
     /// </summary>
     void CreateMesh()
     {
-        Mesh mesh = new()
-        {
-            vertices = _vertices.ToArray(),
-            triangles = _indices.ToArray(),
-            uv = _uvs.ToArray()
-        };
+        Mesh mesh = new();
+        mesh.vertices = _vertices.ToArray();
+        mesh.subMeshCount = 2;
+        mesh.SetTriangles(_indices.ToArray(), 0);
+        mesh.SetTriangles(_transparentIndices.ToArray(), 1);
+        mesh.uv = _uvs.ToArray();
         mesh.RecalculateNormals();
         _meshFilter.mesh = mesh;
     }

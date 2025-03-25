@@ -1,10 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Mathematics;
-using Unity.VisualScripting;
-using UnityEditor.Rendering;
 using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 public class MinecraftTerrain : MonoBehaviour
@@ -82,7 +78,10 @@ public class MinecraftTerrain : MonoBehaviour
     void GenerateChunkAroundPlayer()
     {
         Coord playerPos = Vector3ToCoord(player.transform.position);
-        previousActiveChunk = activeChunks;
+        // previousActiveChunk = activeChunks;
+        previousActiveChunk.Clear();
+        previousActiveChunk.AddRange(activeChunks);
+        activeChunks.Clear();
         for (int x = playerPos.X_int - VoxelData.ViewDistance; x < playerPos.X_int + VoxelData.ViewDistance; x++)
         {
             for (int z = playerPos.Z_int - VoxelData.ViewDistance; z < playerPos.Z_int + VoxelData.ViewDistance; z++)
@@ -92,6 +91,7 @@ public class MinecraftTerrain : MonoBehaviour
                 {
                     if (_chunks[x, z] == null)
                     {
+                        // Debug.Log($"[청크 생성] ({x}, {z}) 청크를 새로 생성합니다.");
                         _chunks[x, z] = new Chunk(ChunkCoord, this.blockData, this, false);
                         chunksToCreate.Add(new Coord(x, z));
                     }
@@ -171,7 +171,20 @@ public class MinecraftTerrain : MonoBehaviour
     }
     
 
-    public bool CheckVoxel(Vector3 pos)
+    // public bool CheckVoxel(Vector3 pos)
+    // {
+    //     Coord thisChunk = new Coord(pos);
+    //
+    //     if (!IsChunkInWorld(thisChunk.X_int, thisChunk.Z_int) || pos.y < 0 || pos.y > VoxelData.ChunkHeight) 
+    //         return false;
+    //
+    //     if (_chunks[thisChunk.X_int, thisChunk.Z_int] != null && _chunks[thisChunk.X_int, thisChunk.Z_int].isVoxelMapPopulated)
+    //         return blockData.BlockTypeDictionary[_chunks[thisChunk.X_int, thisChunk.Z_int].GetVoxelFromVector(pos)].isSolid;
+    //
+    //     return blockData.BlockTypeDictionary[TerrainCondition(pos)].isSolid;
+    // }
+    
+    public bool CheckTransparent(Vector3 pos)
     {
         Coord thisChunk = new Coord(pos);
 
@@ -179,10 +192,9 @@ public class MinecraftTerrain : MonoBehaviour
             return false;
 
         if (_chunks[thisChunk.X_int, thisChunk.Z_int] != null && _chunks[thisChunk.X_int, thisChunk.Z_int].isVoxelMapPopulated)
-            return blockData.BlockTypeDictionary[_chunks[thisChunk.X_int, thisChunk.Z_int].GetVoxelFromVector(pos)].isSolid;
+            return blockData.BlockTypeDictionary[_chunks[thisChunk.X_int, thisChunk.Z_int].GetVoxelFromVector(pos)].isTransparent;
 
-        return blockData.BlockTypeDictionary[TerrainCondition(pos)].isSolid;
-
+        return blockData.BlockTypeDictionary[TerrainCondition(pos)].isTransparent;
     }
     
     Coord Vector3ToCoord(Vector3 pos)

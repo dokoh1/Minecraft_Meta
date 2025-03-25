@@ -1,7 +1,5 @@
 using System;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
-
 public class PlayerMove : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -23,18 +21,20 @@ public class PlayerMove : MonoBehaviour
     private float _reach = 8f;
     private float _walkSpeed = 3f;
     private float _runSpeed = 6f;
-    private float _mouseSpeed = 300f;
+    private float _mouseSpeed = 3f;
     private float _jumpForce = 10f;
+    private float _FlyForce = 3f;
     private float _playerHeight = 2f;
     private bool _mouseLockHide = true;
     private bool _isGravity = false;
+    private bool _isGround;
     
     void Start()
     {
         _mainCamera = Camera.main;
         _rigidbody = gameObject.GetComponent<Rigidbody>();
         _terrain= GameObject.Find("Terrain").GetComponent<MinecraftTerrain>();
-        blockType = BlockTypeEnum.Dirt;
+        blockType = BlockTypeEnum.Stone;
         _rigidbody.freezeRotation = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -46,13 +46,37 @@ public class PlayerMove : MonoBehaviour
         if (_mouseLockHide)
         {
             Rotate();
-            var grounded = Physics.Raycast(player.transform.position, Vector3.down, _playerHeight * 0.5f + 0.2f);
-            if (Input.GetKeyDown(KeyCode.Space) && grounded)
-                Jump();
+            JumpAndFly();
         }
-
+        BlockTypeSet();
         BlockPutCheck();
         
+        
+        GravitySet();
+        SetCursorLock();
+    }
+
+    private void BlockTypeSet()
+    {
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            blockType = BlockTypeEnum.Stone;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            blockType = BlockTypeEnum.Dirt;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            blockType = BlockTypeEnum.Glass;
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            blockType = BlockTypeEnum.Grass;
+        }
+    }
+    private void GravitySet()
+    {
         if (Input.GetKeyDown(KeyCode.F1))
         {
             if (_isGravity == false)
@@ -66,10 +90,7 @@ public class PlayerMove : MonoBehaviour
                 _isGravity = false;
             }
         }
-
-        SetCursorLock();
     }
-
     private void BlockPutCheck()
     {
         ray = new Ray(_mainCamera.transform.position, _mainCamera.transform.forward);
@@ -152,8 +173,8 @@ public class PlayerMove : MonoBehaviour
     
     private void Rotate()
     {
-        float mouseX = Input.GetAxis("Mouse X") * _mouseSpeed * Time.deltaTime;
-        float mouseY = Input.GetAxis("Mouse Y") * _mouseSpeed * Time.deltaTime;
+        float mouseX = Input.GetAxisRaw("Mouse X") * _mouseSpeed;
+        float mouseY = Input.GetAxisRaw("Mouse Y") * _mouseSpeed;
         _rotateX -= mouseY;
         _rotateY += mouseX;
         _rotateX = Mathf.Clamp(_rotateX, -90f, 90f);
@@ -163,8 +184,21 @@ public class PlayerMove : MonoBehaviour
     }
 
 
-    private void Jump()
+    private void JumpAndFly()
     {
-        _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
+        _isGround = Physics.Raycast(player.transform.position, Vector3.down, _playerHeight * 0.5f + 0.2f);
+        
+        if (_isGravity == true)
+        {
+            if (_isGround == true && Input.GetKeyDown(KeyCode.Space))
+                _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
+            
+        }
+        else if (_isGravity == false)
+        {
+            if (Input.GetKey(KeyCode.Space))
+                _rigidbody.position += Vector3.up * (_FlyForce * Time.deltaTime);
+        }
+
     }
 }

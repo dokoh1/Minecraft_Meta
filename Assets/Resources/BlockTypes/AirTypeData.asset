@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: AirTypeData
   m_EditorClassIdentifier: 
   isSolid: 0
+  isTransparent: 1
   blockName: Air
   backFaceTexture: 0
   frontFaceTexture: 0

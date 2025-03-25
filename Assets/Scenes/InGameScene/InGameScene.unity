@@ -896,6 +896,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _material: {fileID: 2100000, guid: b689df0141f8408458869c07ee32ed7b, type: 2}
+  transparentMaterial: {fileID: 2100000, guid: e1ddb8640d6f8a04a87ef26447c92ef5, type: 2}
 --- !u!1 &796804300
 GameObject:
   m_ObjectHideFlags: 0
