@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public static class CustomNoise
 {
@@ -21,13 +20,13 @@ public static class CustomNoise
         float y = (position.y + offset +0.1f) * scale;
         float z = (position.z + offset +0.1f) * scale;
 
-        float AB = Mathf.PerlinNoise(x, y);
-        float BC = Mathf.PerlinNoise(y, z);
-        float AC = Mathf.PerlinNoise(x, z);
-        float BA = Mathf.PerlinNoise(y, x);
-        float CB = Mathf.PerlinNoise(z, y);
-        float CA = Mathf.PerlinNoise(z, x);
-        if ((AB + BC + AC + BA + CB + CA + CA) / 6 > threshold)
+        float ab = Mathf.PerlinNoise(x, y);
+        float bc = Mathf.PerlinNoise(y, z);
+        float ac = Mathf.PerlinNoise(x, z);
+        float ba = Mathf.PerlinNoise(y, x);
+        float cb = Mathf.PerlinNoise(z, y);
+        float ca = Mathf.PerlinNoise(z, x);
+        if ((ab + bc + ac + ba + cb + ca) / 6 > threshold)
             return true;
         else
             return false;

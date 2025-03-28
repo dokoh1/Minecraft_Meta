@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "BiomeTypeData", menuName = "Minecraft/BiomeTypeData")]
 public class BiomeTypeData : ScriptableObject
@@ -12,6 +13,22 @@ public class BiomeTypeData : ScriptableObject
     public int terrainHeight;
     //지형 scale
     public float terrainScale;
+    
+    [Header("Trees")] 
+    public float treeZoneScale;
+
+    [Range(0.1f, 1f)] 
+    public float treeZoneThreshold;
+    public float treePlaceScale;
+    
+    [Range(0.1f, 1f)]
+    public float treePlaceThreshold;
+
+    public int maxTrunkHeight;
+    public int minTrunkHeight;
+    
+    public float trunkScale;
+    public float trunkOffest;
     public Load[] loads;
 }
 
@@ -20,9 +37,9 @@ public class Load
 {
     public string blockName;
     public BlockTypeEnum blockType;
-    public int MinHeight;
-    public int MaxHeight;
-    public float Scale;
+    public int minHeight;
+    public int maxHeight;
+    public float scale;
     public float threshold;
     public float noiseOffset;
 

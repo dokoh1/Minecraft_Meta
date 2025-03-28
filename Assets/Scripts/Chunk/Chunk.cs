@@ -1,51 +1,79 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Animations;
 
 public class Chunk
 {
-    public Coord _coord;
+    public Queue<VoxelCondition> Modifications = new();
     
-    private BlockData BlockData;
+    private Coord _coord;
+    private BlockData _blockData;
+    private MinecraftTerrain _terrain;
     private GameObject _chunkObject;
+    
     private MeshRenderer _renderer;
     private MeshFilter _meshFilter;
     private MeshCollider _meshColider;
     
-    private int _vertexIndex = 0;
-    private readonly BlockTypeEnum[,,] _blockNames = new BlockTypeEnum[16,256, 16];
     
+    private readonly BlockTypeEnum[,,] _blockNames = new BlockTypeEnum[16,256, 16];
     private readonly List<Vector3> _vertices = new();
     private readonly List<int> _indices = new();
     private readonly List<Vector2> _uvs = new();
-    List<int> _transparentIndices = new();
-    Material[] _materials = new Material[2];
-
-    private MinecraftTerrain _terrain;
+    private readonly List<int> _transparentIndices = new();
+    private Material[] _materials = new Material[2];
+    private int _vertexIndex = 0;
+    
     private bool _isActive;
-    public bool isVoxelMapPopulated = false;
-    public Chunk(Coord coord, BlockData blockData, MinecraftTerrain terrain, bool OnLoad)
+    private bool _isBlockNamePopulated = false;
+    public bool IsActive
+    {
+        get
+        {
+            return _isActive;
+        }
+        set
+        {
+            _isActive = value;
+            if (_chunkObject != null)
+                _chunkObject.SetActive(value);
+        }
+    }
+
+    public bool IsBlockNamePopulated
+    {
+        get
+        {
+            return _isBlockNamePopulated;
+        }
+        set
+        {
+            _isBlockNamePopulated = value;
+        }
+    }
+    
+    public Chunk(Coord coord, BlockData blockData, MinecraftTerrain terrain, bool onLoad)
     {
         _coord = coord;
-        BlockData = blockData;
+        _blockData = blockData;
         _terrain = terrain;
-        isActive = true;
-        if (OnLoad)
+        IsActive = true;
+        if (onLoad)
             Init();
     }
 
-    void UpdateAroundChunk(int x, int y, int z)
+    private void UpdateAroundChunk(int x, int y, int z)
     {
         Vector3 thisVoxel = new Vector3(x, y, z);
         for (int i = 0; i < 6; i++)
         {
-            Vector3 CheckVoxel = thisVoxel + VoxelData.FaceChecks[i];
-            if (CheckVoxel.x < 0 || CheckVoxel.x > VoxelData.ChunkWidth - 1 ||
-                CheckVoxel.y < 0 || CheckVoxel.y > VoxelData.ChunkHeight - 1 ||
-                CheckVoxel.z < 0 || CheckVoxel.z > VoxelData.ChunkDepth - 1)
-                _terrain.Vector3ToChunk(CheckVoxel + _chunkObject.transform.position).UpdateChunk();
+            Vector3 checkVoxel = thisVoxel + VoxelData.FaceChecks[i];
+            if (checkVoxel.x < 0 || checkVoxel.x > VoxelData.ChunkWidth - 1 ||
+                checkVoxel.y < 0 || checkVoxel.y > VoxelData.ChunkHeight - 1 ||
+                checkVoxel.z < 0 || checkVoxel.z > VoxelData.ChunkDepth - 1)
+                _terrain.Vector3ToChunk(checkVoxel + _chunkObject.transform.position).UpdateChunk();
         }
     }
+    
     public void EditBlockInChunk(Vector3 pos, BlockTypeEnum blockType)
     {
         int xCheck = Mathf.FloorToInt(pos.x);
@@ -55,6 +83,7 @@ public class Chunk
         xCheck -= Mathf.FloorToInt(_chunkObject.transform.position.x);
         zCheck -= Mathf.FloorToInt(_chunkObject.transform.position.z);
         _blockNames[xCheck, yCheck, zCheck] = blockType;
+        
         UpdateAroundChunk(xCheck, yCheck, zCheck);
         UpdateChunk();
     }
@@ -66,8 +95,8 @@ public class Chunk
         _renderer = _chunkObject.AddComponent<MeshRenderer>();
         _meshColider = _chunkObject.AddComponent<MeshCollider>();
 
-        _materials[0] = BlockData._material;
-        _materials[1] = BlockData.transparentMaterial;
+        _materials[0] = _blockData._material;
+        _materials[1] = _blockData.transparentMaterial;
         _renderer.materials = _materials;
         _chunkObject.transform.SetParent(_terrain.transform);
         _chunkObject.transform.position = new Vector3(_coord.X_int * VoxelData.ChunkWidth, 0f, _coord.Z_int * VoxelData.ChunkDepth);
@@ -86,20 +115,8 @@ public class Chunk
         _transparentIndices.Clear();
         _meshColider.sharedMesh = null;
     }
-    public bool isActive
-    {
-        get
-        {
-            return _isActive;
-        }
-        set
-        {
-            _isActive = value;
-            if (_chunkObject != null)
-                _chunkObject.SetActive(value);
-        }
-    }
-    void ChunkTypeSetting()
+    
+    private void ChunkTypeSetting()
     {
         for (int y = 0; y < VoxelData.ChunkHeight; y++)
         {
@@ -112,17 +129,15 @@ public class Chunk
                 }
             }
         }
-        isVoxelMapPopulated = true;
+        _isBlockNamePopulated = true;
     }
-    
-    
     
     /// <summary>
     /// Voxel이 생성되어야할지 말아야할지 판단하는 함수
     /// </summary>
     /// <param name="pos">위치</param>
     /// <returns></returns>
-    bool IsCheckVoxel(Vector3 pos)
+    private bool IsCheckVoxel(Vector3 pos)
     {
         int x = Mathf.FloorToInt(pos.x);
         int y = Mathf.FloorToInt(pos.y);
@@ -133,11 +148,17 @@ public class Chunk
             z < 0 || z > VoxelData.ChunkDepth - 1)
             return _terrain.CheckTransparent(pos + _chunkObject.transform.position);
         
-        return BlockData.BlockTypeDictionary[_blockNames[x, y, z]].isTransparent;
+        return _blockData.BlockTypeDictionary[_blockNames[x, y, z]].isTransparent;
     }
     
-    void UpdateChunk()
+    public void UpdateChunk()
     {
+        while (Modifications.Count > 0)
+        {
+            VoxelCondition voxelCondition = Modifications.Dequeue();
+            Vector3 pos = voxelCondition.Position -= _chunkObject.transform.position;
+            _blockNames[(int)pos.x, (int)pos.y, (int)pos.z] = voxelCondition.BlockType;
+        }
         ClearChunk();
         for (int y = 0; y < VoxelData.ChunkHeight; y++)
         {
@@ -145,7 +166,7 @@ public class Chunk
             {
                 for (int z = 0; z < VoxelData.ChunkDepth; z++)
                 {
-                    if (BlockData.BlockTypeDictionary[_blockNames[x,y,z]].isSolid)
+                    if (_blockData.BlockTypeDictionary[_blockNames[x,y,z]].isSolid)
                         UpdateMeshData(new Vector3(x, y, z));
                 }
             }
@@ -169,7 +190,7 @@ public class Chunk
     /// Voxel의 Vertex 정보 및 index정보 및 uv 정보를 넣는다.
     /// </summary>
     /// <param name="pos"></param>
-    void UpdateMeshData(Vector3 pos)
+    private void UpdateMeshData(Vector3 pos)
     {
         BlockTypeEnum blockKey = _blockNames[(int)pos.x, (int)pos.y, (int)pos.z];
         bool isTransparent = _terrain.blockData.BlockTypeDictionary[blockKey].isTransparent;
@@ -177,13 +198,12 @@ public class Chunk
         {
             if (IsCheckVoxel(pos + VoxelData.FaceChecks[i]))
             {
-                
                 _vertices.Add(pos + VoxelData.VoxelVertes[VoxelData.VoxelIndex[i, 0]]);
                 _vertices.Add(pos + VoxelData.VoxelVertes[VoxelData.VoxelIndex[i, 1]]);
                 _vertices.Add(pos + VoxelData.VoxelVertes[VoxelData.VoxelIndex[i, 2]]);
                 _vertices.Add(pos + VoxelData.VoxelVertes[VoxelData.VoxelIndex[i, 3]]);
 
-                AddTexture(BlockData.BlockTypeDictionary[blockKey].GetTextureID(i));
+                AddTexture(_blockData.BlockTypeDictionary[blockKey].GetTextureID(i));
 
                 if (!isTransparent)
                 {
@@ -207,10 +227,11 @@ public class Chunk
             }
         }
     }
+    
     /// <summary>
     /// Vertex, uv, Index 정보를 Mesh에 넣는다.
     /// </summary>
-    void CreateMesh()
+    private void CreateMesh()
     {
         Mesh mesh = new();
         mesh.vertices = _vertices.ToArray();
@@ -226,7 +247,7 @@ public class Chunk
     /// Atlas 이미지를 uv 좌표에 맞게 매핑하는 로직을 담은 함수
     /// </summary>
     /// <param name="textureID"></param>
-    void AddTexture(int textureID)
+    private void AddTexture(int textureID)
     {
         float y = textureID / VoxelData.TextureAtlasSize;
         float x = textureID - (y * VoxelData.TextureAtlasSize);
