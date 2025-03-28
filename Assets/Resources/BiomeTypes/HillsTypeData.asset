@@ -16,39 +16,47 @@ MonoBehaviour:
   solidGroundHeight: 42
   terrainHeight: 42
   terrainScale: 0.25
+  treeZoneScale: 1.3
+  treeZoneThreshold: 0.6
+  treePlaceScale: 15
+  treePlaceThreshold: 0.8
+  maxTrunkHeight: 10
+  minTrunkHeight: 5
+  trunkScale: 3
+  trunkOffest: 0
   loads:
   - blockName: Dirt
     blockType: 3
-    MinHeight: 1
-    MaxHeight: 64
-    Scale: 0.06
+    minHeight: 1
+    maxHeight: 64
+    scale: 0.06
     threshold: 0.7
     noiseOffset: 0
   - blockName: Diamond
     blockType: 9
-    MinHeight: 1
-    MaxHeight: 16
-    Scale: 0.15
+    minHeight: 1
+    maxHeight: 16
+    scale: 0.15
     threshold: 0.75
     noiseOffset: 0
   - blockName: Gold
     blockType: 10
-    MinHeight: 1
-    MaxHeight: 32
-    Scale: 0.12
+    minHeight: 1
+    maxHeight: 32
+    scale: 0.12
     threshold: 0.65
     noiseOffset: 0
   - blockName: Coal
     blockType: 12
-    MinHeight: 1
-    MaxHeight: 128
-    Scale: 0.08
+    minHeight: 1
+    maxHeight: 128
+    scale: 0.08
     threshold: 0.8
     noiseOffset: 0
   - blockName: Sand
     blockType: 7
-    MinHeight: 20
-    MaxHeight: 50
-    Scale: 0.07
+    minHeight: 20
+    maxHeight: 50
+    scale: 0.07
     threshold: 0.7
     noiseOffset: 0

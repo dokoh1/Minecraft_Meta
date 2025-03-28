@@ -16,11 +16,17 @@ MonoBehaviour:
   solidGroundHeight: 42
   terrainHeight: 42
   terrainScale: 0.1
+  treeZoneScale: 0
+  treeZoneThreshold: 0.1
+  treePlaceScale: 0
+  treePlaceThresholdf: 0.1
+  maxTreeHeights: 0
+  minTreeHeights: 0
   loads:
   - blockName: 
     blockType: 0
-    MinHeight: 0
-    MaxHeight: 0
-    Scale: 0
+    minHeight: 0
+    maxHeight: 0
+    scale: 0
     threshold: 0
     noiseOffset: 0

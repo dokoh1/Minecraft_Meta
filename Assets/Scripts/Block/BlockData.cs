@@ -6,6 +6,8 @@ public class BlockData : MonoBehaviour
 {
     public readonly Dictionary<BlockTypeEnum, BlockTypeData> BlockTypeDictionary = new();
     public Material _material;
+    public Material transparentMaterial;
+    
     private void Awake()
     {
         LoadBlockTypes();

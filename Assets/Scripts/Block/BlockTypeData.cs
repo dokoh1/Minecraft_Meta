@@ -1,10 +1,10 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "BlockTypeData", menuName = "Minecraft/BlockTypeData")]
 public class BlockTypeData : ScriptableObject
 {
     public bool isSolid;
+    public bool isTransparent;
     public string blockName;
     public int backFaceTexture;
     public int frontFaceTexture;

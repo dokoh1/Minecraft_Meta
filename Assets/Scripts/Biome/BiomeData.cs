@@ -1,13 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public enum BiomeTypeEnum
-{
-    SnowField,
-    Hills,
-    Forest,
-    Desert,
-}
 public class BiomeData : MonoBehaviour
 {
    public readonly Dictionary<BiomeTypeEnum, BiomeTypeData> BiomeTypeDictionary = new();

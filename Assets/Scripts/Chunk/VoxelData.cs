@@ -7,7 +7,8 @@ public static class VoxelData
     public static readonly int ChunkHeight = 256;
 
     public static readonly int TextureAtlasSize = 16;
-    public static readonly int TerrainSize = 100;
+    public static readonly int TerrainSize = 1000;
+    public static readonly int InitSize = 4;
 
     public static readonly int ViewDistance = 5;
     public static int TerrainInVoxelSize
@@ -21,7 +22,7 @@ public static class VoxelData
         get {return 1f / TextureAtlasSize; }
     }
     
-    public static readonly Vector3[] VoxelVertes = new Vector3[]
+    public static readonly Vector3[] VoxelVertes = 
     {
         new Vector3(0.0f, 0.0f, 0.0f),
         new Vector3(1.0f, 0.0f, 0.0f),
@@ -65,26 +66,4 @@ public static class VoxelData
         new Vector2(1.0f, 0.0f),
         new Vector2(1.0f, 1.0f),
     };
-}
-
-public class Coord
-{
-    public int X;
-    public int Z;
-
-    public Coord(int x, int z)
-    {
-        X = x;
-        Z = z;
-    }
-
-    public bool Equals(Coord other)
-    {
-        if (other == null)
-            return false;
-        else if (other.X == X && other.Z == Z)
-            return true;
-        else
-            return false;
-    }
 }

@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8c3c4720acb4d3444b37d483dfcb061a, type: 3}
-  m_Name: AirTypeData
+  m_Name: WoodTypeData
   m_EditorClassIdentifier: 
-  isSolid: 0
-  isTransparent: 1
-  blockName: Air
-  backFaceTexture: 0
-  frontFaceTexture: 0
-  topFaceTexture: 0
-  bottomFaceTexture: 0
-  leftFaceTexture: 0
-  rightFaceTexture: 0
+  isSolid: 1
+  isTransparent: 0
+  blockName: Wood
+  backFaceTexture: 20
+  frontFaceTexture: 20
+  topFaceTexture: 21
+  bottomFaceTexture: 21
+  leftFaceTexture: 20
+  rightFaceTexture: 20
