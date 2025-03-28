@@ -3,12 +3,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 public class button : MonoBehaviour
 {
-    public GameObject mainMenu;
-    public GameObject credits;
+    //public GameObject mainMenu;
+    //public GameObject credits;
 
     public void GoToSceneTwo(string sceneName)
     {
-        SceneManager.LoadScene("Inventory");
+        SceneManager.LoadScene("InGameScene");
     }
     void Start()
     {
