@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 
 [CreateAssetMenu(fileName = "BiomeTypeData", menuName = "Minecraft/BiomeTypeData")]
 public class BiomeTypeData : ScriptableObject
