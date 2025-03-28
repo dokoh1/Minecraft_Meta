@@ -15,18 +15,30 @@ public class NatureStructure
             queue.Enqueue(new VoxelCondition(new Vector3(position.x, position.y + i, position.z), BlockTypeEnum.Wood));
         }
 
-        for (int x = -3; x < 4; x++)
+        for (int x = -2; x < 3; x++)
         {
-            for (int y = 0; y < 7; y++)
+            for (int z = -2; z < 3; z++)
             {
-                for (int z = -3; z < 4; z++)
+                int xAbs = Mathf.Abs(x);
+                int zAbs = Mathf.Abs(z);
+                if (xAbs == 2 || zAbs == 2)
                 {
-                    queue.Enqueue(new VoxelCondition(new Vector3(position.x + x, position.y + height + y, position.z + z),
-                        BlockTypeEnum.Leave));
+                    for (int y = 0; y < 2; y++)
+                    {
+                        queue.Enqueue(new VoxelCondition(new Vector3(position.x + x, position.y + height + y, position.z + z),
+                            BlockTypeEnum.Leave));
+                    }
+                }
+                else
+                {
+                    for (int y = 0; y < 4; y++)
+                    {
+                        queue.Enqueue(new VoxelCondition(new Vector3(position.x + x, position.y + height + y, position.z + z),
+                            BlockTypeEnum.Leave));
+                    }
                 }
             }
         }
-        
         
     }
 }
