@@ -263,6 +263,28 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: ToolBarHighlight
+      rect:
+        serializedVersion: 2
+        x: 1
+        y: 211
+        width: 22
+        height: 22
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 1, y: 1, z: 1, w: 1}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8bd57228859949a4f944b14961772179
+      internalID: -1929681275
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
@@ -280,6 +302,7 @@ TextureImporter:
       MainSlotBar: 867545712
       Slot: -316811676
       SlotType2: 892668715
+      ToolBarHighlight: -1929681275
       basic_button: 1697731655
       change_button: -960675710
       nonactive_button: 1900520262

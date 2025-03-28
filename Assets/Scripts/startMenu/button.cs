@@ -3,22 +3,15 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 public class button : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    public GameObject mainMenu;
-    public GameObject credits;
+    //public GameObject mainMenu;
+    //public GameObject credits;
 
     public void GoToSceneTwo(string sceneName)
     {
-        SceneManager.LoadScene("Inventory");
+        SceneManager.LoadScene("InGameScene");
     }
     void Start()
     {
         Debug.Log("button start");
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 }

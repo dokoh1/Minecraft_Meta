@@ -3,7 +3,6 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "BlockTypeData", menuName = "Minecraft/BlockTypeData")]
 public class BlockTypeData : ScriptableObject
 {
-
     public bool isSolid;
     public bool isTransparent;
     public string blockName;
