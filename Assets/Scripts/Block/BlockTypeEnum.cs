@@ -13,4 +13,7 @@ public enum BlockTypeEnum
     Gold,
     Iron,
     Coal,
+    Glass,
+    Wood,
+    Leave,
 }
