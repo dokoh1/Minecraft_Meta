@@ -1,25 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using Unity.VisualScripting.Dependencies.NCalc;
-
-public enum BlockTypeEnum
-{
-    Air,
-    Stone,
-    BlackStone,
-    Dirt,
-    Grass,
-    OakWood,
-    BedRock,
-    Sand,
-    Snow,
-    Diamond,
-    Gold,
-    Iron,
-    Coal,
-    Glass,
-}
-
 
 [DefaultExecutionOrder(-2000)]
 public class BlockData : MonoBehaviour
@@ -27,6 +7,7 @@ public class BlockData : MonoBehaviour
     public readonly Dictionary<BlockTypeEnum, BlockTypeData> BlockTypeDictionary = new();
     public Material _material;
     public Material transparentMaterial;
+    
     private void Awake()
     {
         LoadBlockTypes();
@@ -49,4 +30,3 @@ public class BlockData : MonoBehaviour
         }
     }
 }
-

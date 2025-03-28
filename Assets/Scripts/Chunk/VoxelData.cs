@@ -10,11 +10,6 @@ public static class VoxelData
     public static readonly int TerrainSize = 1000;
     public static readonly int InitSize = 4;
 
-    public static int InitInVoxelSize
-    {
-        get { return InitSize * ChunkWidth; }
-    }
-
     public static readonly int ViewDistance = 5;
     public static int TerrainInVoxelSize
     {
@@ -27,7 +22,7 @@ public static class VoxelData
         get {return 1f / TextureAtlasSize; }
     }
     
-    public static readonly Vector3[] VoxelVertes = new Vector3[]
+    public static readonly Vector3[] VoxelVertes = 
     {
         new Vector3(0.0f, 0.0f, 0.0f),
         new Vector3(1.0f, 0.0f, 0.0f),
@@ -71,51 +66,4 @@ public static class VoxelData
         new Vector2(1.0f, 0.0f),
         new Vector2(1.0f, 1.0f),
     };
-}
-
-public class Coord
-{
-    private int _x;
-    private int _z;
-
-    public int X_int { get { return _x; } set { _x = value; } }
-    public int Z_int { get { return _z; } set { _z = value; } }
-    public float X
-    {
-        get => _x;
-        set => _x = Mathf.FloorToInt(value);
-    }
-
-    public float Z
-    {
-        get => _z;
-        set => _z = Mathf.FloorToInt(value);
-    }
-    public Coord(int x, int z)
-    {
-        X = x;
-        _z = z;
-    }
-
-    public Coord()
-    {
-        X = 0;
-        _z = 0;
-    }
-
-    public Coord(Vector3 pos)
-    {
-        X = Mathf.FloorToInt(pos.x) / VoxelData.ChunkWidth;
-        _z = Mathf.FloorToInt(pos.z) / VoxelData.ChunkDepth;
-    }
-
-    public bool Equals(Coord other)
-    {
-        if (other == null)
-            return false;
-        else if (other.X == X && other._z == _z)
-            return true;
-        else
-            return false;
-    }
 }
