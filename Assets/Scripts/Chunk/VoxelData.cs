@@ -10,7 +10,7 @@ public static class VoxelData
     public static readonly int TerrainSize = 1000;
     public static readonly int InitSize = 4;
 
-    public static readonly int ViewDistance = 5;
+    public static readonly int ViewDistance = 10;
     public static int TerrainInVoxelSize
     {
         get { return TerrainSize * ChunkWidth; }
