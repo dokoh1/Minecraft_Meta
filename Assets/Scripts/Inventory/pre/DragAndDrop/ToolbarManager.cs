@@ -20,7 +20,6 @@ public class ToolbarManager : MonoBehaviour
          highlight.position = new Vector3(x,y,highlight.position.z);
       }
    }
-
    private void Update()
    {
       for (int i = 0; i < 9; i++)

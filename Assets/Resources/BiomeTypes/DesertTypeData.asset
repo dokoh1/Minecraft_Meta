@@ -19,9 +19,11 @@ MonoBehaviour:
   treeZoneScale: 0
   treeZoneThreshold: 0.1
   treePlaceScale: 0
-  treePlaceThresholdf: 0.1
-  maxTreeHeights: 0
-  minTreeHeights: 0
+  treePlaceThreshold: 0.1
+  maxTrunkHeight: 0
+  minTrunkHeight: 0
+  trunkScale: 0
+  trunkOffest: 0
   loads:
   - blockName: 
     blockType: 0

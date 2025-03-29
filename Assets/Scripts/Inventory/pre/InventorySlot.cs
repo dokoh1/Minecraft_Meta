@@ -1,10 +1,5 @@
-using System;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using Unity.Collections;
-using System.Collections.Generic;
-using TMPro;
 
 public class InventorySlot : MonoBehaviour
 {
