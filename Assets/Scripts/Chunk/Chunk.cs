@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 public class Chunk
 {
@@ -68,6 +69,7 @@ public class Chunk
             Init();
     }
 
+    // ReSharper disable Unity.PerformanceAnalysis
     private void UpdateAroundChunk(int x, int y, int z)
     {
         Vector3 thisVoxel = new Vector3(x, y, z);
@@ -77,7 +79,7 @@ public class Chunk
             if (checkVoxel.x < 0 || checkVoxel.x > VoxelData.ChunkWidth - 1 ||
                 checkVoxel.y < 0 || checkVoxel.y > VoxelData.ChunkHeight - 1 ||
                 checkVoxel.z < 0 || checkVoxel.z > VoxelData.ChunkDepth - 1)
-                _terrain.Vector3ToChunk(checkVoxel + _chunkObject.transform.position).ThreadUpdateChunk();
+                _terrain.Vector3ToChunk(checkVoxel + _chunkObject.transform.position).UpdateChunk();
         }
     }
     
@@ -92,7 +94,7 @@ public class Chunk
         _blockNames[xCheck, yCheck, zCheck] = blockType;
         
         UpdateAroundChunk(xCheck, yCheck, zCheck);
-        ThreadUpdateChunk();
+        UpdateChunk();
     }
 
     public void Init()
@@ -109,10 +111,11 @@ public class Chunk
         _chunkObject.transform.SetParent(_terrain.transform);
         _chunkObject.transform.position = new Vector3(_coord.X_int * VoxelData.ChunkWidth, 0f, _coord.Z_int * VoxelData.ChunkDepth);
         Position = _chunkObject.transform.position;
-        Thread settingThread = new Thread(new ThreadStart(ChunkTypeSetting));
-        settingThread.Start();
-        
+        ChunkTypeSetting();
+
     }
+
+
 
     public void ClearChunk()
     {
@@ -123,24 +126,32 @@ public class Chunk
         _transparentIndices.Clear();
         _leaveIndices.Clear();
     }
-    
+
     private void ChunkTypeSetting()
     {
-        for (int y = 0; y < VoxelData.ChunkHeight; y++)
+        ThreadChunkTypeSetting();
+    }
+    private async UniTask ThreadChunkTypeSetting()
+    {
+        await UniTask.RunOnThreadPool(() =>
         {
-            for (int x = 0; x < VoxelData.ChunkWidth; x++)
+            for (int y = 0; y < VoxelData.ChunkHeight; y++)
             {
-                for (int z = 0; z < VoxelData.ChunkDepth; z++)
+                for (int x = 0; x < VoxelData.ChunkWidth; x++)
                 {
-                    //청크의 내부 좌표가 아닌 월드 좌표를 구하기 위해서 더해준다.
+                    for (int z = 0; z < VoxelData.ChunkDepth; z++)
+                    {
+                        //청크의 내부 좌표가 아닌 월드 좌표를 구하기 위해서 더해준다.
                         _blockNames[x, y, z] = _terrain.TerrainCondition(new Vector3(x, y, z) + Position);
+                    }
                 }
             }
-        }
-        ThreadUpdateChunk();
+        });
+
+        await ThreadUpdateChunk();
         _isBlockNamePopulated = true;
     }
-    
+
     /// <summary>
     /// Voxel이 생성되어야할지 말아야할지 판단하는 함수
     /// </summary>
@@ -162,10 +173,9 @@ public class Chunk
 
     public void UpdateChunk()
     {
-        Thread updateThread = new Thread(new ThreadStart(ThreadUpdateChunk));
-        updateThread.Start();
+        ThreadUpdateChunk();
     }
-    public void ThreadUpdateChunk()
+    public async UniTask ThreadUpdateChunk()
     {
         _threadLock = true;
         while (Modifications.Count > 0)
@@ -175,21 +185,24 @@ public class Chunk
             _blockNames[(int)pos.x, (int)pos.y, (int)pos.z] = voxelCondition.BlockType;
         }
         ClearChunk();
-        for (int y = 0; y < VoxelData.ChunkHeight; y++)
+        await UniTask.RunOnThreadPool(() =>
         {
-            for (int x = 0; x < VoxelData.ChunkWidth; x++)
+            for (int y = 0; y < VoxelData.ChunkHeight; y++)
             {
-                for (int z = 0; z < VoxelData.ChunkDepth; z++)
+                for (int x = 0; x < VoxelData.ChunkWidth; x++)
                 {
-                    if (_blockData.BlockTypeDictionary[_blockNames[x,y,z]].isSolid)
-                        UpdateMeshData(new Vector3(x, y, z));
+                    for (int z = 0; z < VoxelData.ChunkDepth; z++)
+                    {
+                        if (_blockData.BlockTypeDictionary[_blockNames[x,y,z]].isSolid)
+                            UpdateMeshData(new Vector3(x, y, z));
+                    }
                 }
             }
-        }
+        });
 
-        lock (_terrain.chunksQueue)
+        lock (_terrain.ChunksQueue)
         {
-           _terrain.chunksQueue.Enqueue(this);
+           _terrain.ChunksQueue.Enqueue(this);
         }
 
         _threadLock = false;
