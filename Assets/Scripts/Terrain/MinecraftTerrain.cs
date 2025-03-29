@@ -11,6 +11,9 @@ public class MinecraftTerrain : MonoBehaviour
     public Transform player;
     public GameObject debugUI;
     
+    //Multi Thread Rendering
+    public Queue<Chunk> chunksQueue = new();
+    
     public Coord PlayerCoord;
     //seed 값
     public int seed;
@@ -31,11 +34,11 @@ public class MinecraftTerrain : MonoBehaviour
     //코루틴 청크 프레임 단위 생성을 위한 리스트
     private List<Coord> _chunksToCreate = new();
     private List<Chunk> _chunksToUpdate = new();
-
-    //modification 코루틴 무한 루프 방지
+    
+    //멀티 쓰레드 방지용 flag
     private bool _isRunningModification = false;
     //나무 및 자연 구조물 추가
-    private Queue<VoxelCondition> _modifications = new Queue<VoxelCondition>();
+    private Queue<Queue<VoxelCondition>> _modifications = new();
     private NatureStructure _natureStructure;
     
     private void Start()
@@ -62,8 +65,8 @@ public class MinecraftTerrain : MonoBehaviour
         if (!PlayerCoord.Equals(_playerPreviousCoord))
             GenerateChunkAroundPlayer();
         
-        if (_modifications.Count > 0 && !_isRunningModification)
-            StartCoroutine(ApplyModifications());
+        if (!_isRunningModification)
+           ApplyModifications();
         
         if (_chunksToCreate.Count > 0)
             CreateChunk();
@@ -75,6 +78,16 @@ public class MinecraftTerrain : MonoBehaviour
             debugUI.SetActive(!debugUI.activeSelf);
     }
 
+    private void LateUpdate()
+    {
+        if (chunksQueue.Count > 0)
+            lock (chunksQueue)
+            {
+                if (chunksQueue.Peek().IsEdit)
+                    chunksQueue.Dequeue().CreateMesh();
+            }
+    }
+
     private void CreateChunk()
     {
         Coord c = _chunksToCreate[0];
@@ -83,27 +96,32 @@ public class MinecraftTerrain : MonoBehaviour
         _chunks[c.X_int, c.Z_int].Init();
     }
 
-    IEnumerator ApplyModifications()
+    void ApplyModifications()
     {
         _isRunningModification = true;
-        int count = 0;
+        
         while (_modifications.Count > 0)
         {
-            VoxelCondition condition = _modifications.Dequeue();
-            Coord coord = Vector3ToCoord(condition.Position);
-            if (_chunks[coord.X_int, coord.Z_int] == null)
+            Queue<VoxelCondition> queue = _modifications.Dequeue();
+            if (queue == null)
             {
-                _chunks[coord.X_int, coord.Z_int] = new Chunk(coord, blockData, this, true);
-                _activeChunks.Add(coord);
+                Debug.Log("NULL!!");
+                _isRunningModification = false;
+                return;
             }
-            _chunks[coord.X_int, coord.Z_int].Modifications.Enqueue(condition);
-            if (!_chunksToUpdate.Contains(_chunks[coord.X_int, coord.Z_int]))
-                _chunksToUpdate.Add(_chunks[coord.X_int, coord.Z_int]);
-            count++;
-            if (count > 200)
+            while (queue.Count > 0)
             {
-                count = 0;
-                yield return null;
+                VoxelCondition condition = queue.Dequeue();
+                Coord coord = Vector3ToCoord(condition.Position);
+                if (_chunks[coord.X_int, coord.Z_int] == null)
+                {
+                    _chunks[coord.X_int, coord.Z_int] = new Chunk(coord, blockData, this, true);
+                    _activeChunks.Add(coord);
+                }
+                _chunks[coord.X_int, coord.Z_int].Modifications.Enqueue(condition);
+                
+                if (!_chunksToUpdate.Contains(_chunks[coord.X_int, coord.Z_int]))
+                    _chunksToUpdate.Add(_chunks[coord.X_int, coord.Z_int]);
             }
         }
 
@@ -116,16 +134,14 @@ public class MinecraftTerrain : MonoBehaviour
 
         while (!updated && index < _chunksToUpdate.Count - 1)
         {
-            if (_chunksToUpdate[index].IsBlockNamePopulated)
+            if (_chunksToUpdate[index].IsEdit)
             {
                 _chunksToUpdate[index].UpdateChunk();
                 _chunksToUpdate.RemoveAt(index);
                 updated = true;
             }
             else
-            {
                 index++;
-            }
         }
     }
     private void GenerateWorld()
@@ -137,25 +153,6 @@ public class MinecraftTerrain : MonoBehaviour
                 _chunks[x, z] = new Chunk(new Coord(x, z),this.blockData, this, true);
                 _activeChunks.Add(new Coord(x, z));
             }
-        }
-        while (_modifications.Count > 0)
-        {
-            VoxelCondition voxelCondition = _modifications.Dequeue();
-            Coord coord = Vector3ToCoord(voxelCondition.Position);
-            if (_chunks[coord.X_int, coord.Z_int] == null)
-            {
-                _chunks[coord.X_int, coord.Z_int] = new Chunk(coord, blockData,this, true);
-                _activeChunks.Add(coord);
-            }
-            _chunks[coord.X_int, coord.Z_int].Modifications.Enqueue(voxelCondition);
-            if (!_chunksToUpdate.Contains(_chunks[coord.X_int, coord.Z_int]))
-                _chunksToUpdate.Add(_chunks[coord.X_int, coord.Z_int]);
-        }
-
-        for (int i = 0; i < _chunksToUpdate.Count; i++)
-        {
-            _chunksToUpdate[i].UpdateChunk();
-            _chunksToUpdate.RemoveAt(0);
         }
     }
     
@@ -245,7 +242,7 @@ public class MinecraftTerrain : MonoBehaviour
             {
                 if (CustomNoise.Get2DPerlin(new Vector2(pos.x, pos.z), 0, hillsBiome.treePlaceScale) >
                     hillsBiome.treePlaceThreshold)
-                    _natureStructure.MakeTree(pos, _modifications, hillsBiome);
+                    _modifications.Enqueue(_natureStructure.MakeTree(pos, hillsBiome));
             }
                 
         }
@@ -267,7 +264,7 @@ public class MinecraftTerrain : MonoBehaviour
         if (!IsChunkInWorld(thisChunk.X_int, thisChunk.Z_int) || pos.y < 0 || pos.y > VoxelData.ChunkHeight) 
             return false;
 
-        if (_chunks[thisChunk.X_int, thisChunk.Z_int] != null && _chunks[thisChunk.X_int, thisChunk.Z_int].IsBlockNamePopulated)
+        if (_chunks[thisChunk.X_int, thisChunk.Z_int] != null && _chunks[thisChunk.X_int, thisChunk.Z_int].IsEdit)
             return blockData.BlockTypeDictionary[_chunks[thisChunk.X_int, thisChunk.Z_int].GetVoxelFromVector(pos)].isTransparent;
 
         return blockData.BlockTypeDictionary[TerrainCondition(pos)].isTransparent;

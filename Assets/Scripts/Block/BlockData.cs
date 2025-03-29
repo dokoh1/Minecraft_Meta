@@ -1,12 +1,15 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.Serialization;
 
 [DefaultExecutionOrder(-2000)]
 public class BlockData : MonoBehaviour
 {
     public readonly Dictionary<BlockTypeEnum, BlockTypeData> BlockTypeDictionary = new();
-    public Material _material;
+    public Material material;
     public Material transparentMaterial;
+    public Material leaveMaterial;
+    // public Material leavesMaterial;
     
     private void Awake()
     {
