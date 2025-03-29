@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using Cysharp.Threading.Tasks;
 
 public class MinecraftTerrain : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class MinecraftTerrain : MonoBehaviour
     public GameObject debugUI;
     
     //Multi Thread Rendering
-    public Queue<Chunk> chunksQueue = new();
+    public Queue<Chunk> ChunksQueue = new();
     
     public Coord PlayerCoord;
     //seed 값
@@ -80,11 +81,11 @@ public class MinecraftTerrain : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (chunksQueue.Count > 0)
-            lock (chunksQueue)
+        if (ChunksQueue.Count > 0)
+            lock (ChunksQueue)
             {
-                if (chunksQueue.Peek().IsEdit)
-                    chunksQueue.Dequeue().CreateMesh();
+                if (ChunksQueue.Peek().IsEdit)
+                    ChunksQueue.Dequeue().CreateMesh();
             }
     }
 
