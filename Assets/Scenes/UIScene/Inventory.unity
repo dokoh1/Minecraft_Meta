@@ -1633,8 +1633,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c430ae17cf693a2479b3ffe643b3ff5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotEnum: 0
-  hasBlock: 0
+  slotEnum: 3
+  hasBlock: 1
 --- !u!1 &305297897 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6616280486558709021, guid: defc5a7ad8e44be419582f5a86ccb68e, type: 3}
@@ -3992,7 +3992,7 @@ PrefabInstance:
     - target: {fileID: 2796794005910213222, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: -1617435934, guid: 10fb9dc30c7a04542a294736b4b013cc, type: 3}
+      objectReference: {fileID: 82718829, guid: 10fb9dc30c7a04542a294736b4b013cc, type: 3}
     - target: {fileID: 2796794005910213222, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
       propertyPath: m_PreserveAspect
       value: 1
@@ -7221,8 +7221,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c430ae17cf693a2479b3ffe643b3ff5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotEnum: 0
-  hasBlock: 0
+  slotEnum: 4
+  hasBlock: 1
 --- !u!1 &1480618947
 GameObject:
   m_ObjectHideFlags: 0
@@ -7253,6 +7253,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemData: {fileID: 0}
+  toolBarManager: {fileID: 0}
 --- !u!4 &1480618949
 Transform:
   m_ObjectHideFlags: 0
@@ -8902,10 +8903,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5aa57e074405b6d4991f16ae65cb98d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  StoneSprite: {fileID: 0}
-  DirtSprite: {fileID: 0}
-  GrassSprite: {fileID: 0}
-  OakWoodSprite: {fileID: 0}
+  StoneSprite: {fileID: 1400625520, guid: 10fb9dc30c7a04542a294736b4b013cc, type: 3}
+  DirtSprite: {fileID: -1843937187, guid: 10fb9dc30c7a04542a294736b4b013cc, type: 3}
+  GrassSprite: {fileID: 612942163, guid: 10fb9dc30c7a04542a294736b4b013cc, type: 3}
+  WoodSprite: {fileID: 0}
 --- !u!4 &1770273311
 Transform:
   m_ObjectHideFlags: 0
@@ -9705,8 +9706,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c430ae17cf693a2479b3ffe643b3ff5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotEnum: 0
-  hasBlock: 0
+  slotEnum: 1
+  hasBlock: 1
 --- !u!1 &1930587601 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6616280486558709021, guid: defc5a7ad8e44be419582f5a86ccb68e, type: 3}
@@ -10061,8 +10062,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c430ae17cf693a2479b3ffe643b3ff5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  slotEnum: 0
-  hasBlock: 0
+  slotEnum: 14
+  hasBlock: 1
 --- !u!1 &1998293297 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6616280486558709021, guid: defc5a7ad8e44be419582f5a86ccb68e, type: 3}
@@ -10628,7 +10629,7 @@ PrefabInstance:
     - target: {fileID: 2796794005910213222, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: -1617435934, guid: 10fb9dc30c7a04542a294736b4b013cc, type: 3}
+      objectReference: {fileID: 82718829, guid: 10fb9dc30c7a04542a294736b4b013cc, type: 3}
     - target: {fileID: 2796794005910213222, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
       propertyPath: m_PreserveAspect
       value: 1

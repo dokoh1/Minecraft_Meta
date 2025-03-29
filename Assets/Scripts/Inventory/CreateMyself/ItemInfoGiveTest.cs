@@ -6,11 +6,7 @@ public class ItemInfoGiveTest : MonoBehaviour
     ItemTypeData2 ItemType = new();
     //ItemData2 클래스 스크립트를 넣을 변수 선언
     public ItemData2 itemData;
-    
-    private void Start()
-    {
-        
-    }
+    public ToolBarManager2 toolBarManager;
     
     public void Update()
     {
@@ -19,6 +15,31 @@ public class ItemInfoGiveTest : MonoBehaviour
     
     public void ClickItemImage()
     {
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (toolBarManager.GetItemID()== BlockTypeEnum.Stone)
+            {
+                Debug.Log("stone블록입니다.");
+            }
+            else if (toolBarManager.GetItemID() == BlockTypeEnum.Grass)
+            {
+                Debug.Log("Grass블록입니다.");
+            }
+            else if (toolBarManager.GetItemID() == BlockTypeEnum.Dirt)
+            {
+                Debug.Log("Dirt블록입니다.");
+            }
+            else if (toolBarManager.GetItemID() == BlockTypeEnum.Wood)
+            {
+                Debug.Log("Wood블록입니다.");
+            }
+            
+        }
+        
+        
+        
+        
+        
         //아이템 이미지를 클릭 했을 때 딕셔너리의 정보를 불러와 저장된 정보와 같은지 확인한 후 
         //디버그 창에 출력하여 해당 아이템 정보와 일치하는지 확인
         // if (Input.GetMouseButtonDown(0))

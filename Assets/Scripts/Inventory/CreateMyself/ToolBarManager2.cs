@@ -37,6 +37,7 @@ public class ToolBarManager2 : MonoBehaviour
         }
     }
     
+    //highlightFrame의 위치를 조정한 이후에 해당 슬롯의 아이템 정보를 넘겨준다.
     public void SelectedSlot(int index)
     {
         //만약 들어온 인덱스가 0보다 작거나 toolbarSlots의 길이보다 크거나 같으면 다시 자신이 있던 자리로 돌아감.
@@ -47,8 +48,15 @@ public class ToolBarManager2 : MonoBehaviour
         Vector3 changedPos = toolbarSlots[currentSlotIndex].transform.position;
         highlightFrame.position = changedPos;
     }
+
+    public BlockTypeEnum GetItemID()
+    {
+        return toolbarSlots[currentSlotIndex].slotEnum;
+    } 
     
-    //highlightFrame의 위치를 조정한 이후에 해당 슬롯의 아이템 정보를 넘겨준다. 
-    
+    public ToolbarSlotManager GetActiveSlot()
+    {
+        return toolbarSlots[currentSlotIndex];
+    }
 }
 

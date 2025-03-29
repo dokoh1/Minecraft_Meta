@@ -3,13 +3,19 @@ using UnityEngine;
 //각 slot의 정보를 불러오는 클래스
 public class ToolbarSlotManager : MonoBehaviour
 {
+    //처음에는 아무것도 들어있지 않음
     private ItemTypeData2 _itemTypeData2;
     public BlockTypeEnum slotEnum;
-    public bool hasBlock;
-    private Sprite _itemSprite;
+    public bool hasBlock = false;
+    private Sprite _choosedItemSprite;
     
-    void Update()
+    public void BlockImageMatch(Sprite sprite, BlockTypeEnum id)
     {
-        //_itemSprite = _itemTypeData2.ItemSprite;
+        if (_choosedItemSprite != null)
+        {
+            _choosedItemSprite = _itemTypeData2.ItemSprite;
+        }
+        hasBlock = true;
+        slotEnum = id;
     }
 }
