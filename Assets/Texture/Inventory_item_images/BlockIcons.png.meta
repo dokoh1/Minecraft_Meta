@@ -220,7 +220,7 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: RedBlock
+      name: BrickBlock
       rect:
         serializedVersion: 2
         x: 34
@@ -344,10 +344,10 @@ TextureImporter:
       entries: []
     nameFileIdTable:
       BlockIcons_0: 1918445042
+      BrickBlock: 1587153379
       DirtBloc: -1843937187
       GrassBlock: 612942163
       OakWood: -1617435934
-      RedBlock: 1587153379
       SandBlock: 2035605212
       StoneBlock: 1400625520
       StoneBlock2: 1341997346
