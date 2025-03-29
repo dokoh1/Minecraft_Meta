@@ -1,10 +1,13 @@
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 
 public class NatureStructure
 {
-    public void MakeTree(Vector3 position, Queue<VoxelCondition> queue, BiomeTypeData biometype)
+    [ItemCanBeNull]
+    public Queue<VoxelCondition> MakeTree(Vector3 position, BiomeTypeData biometype)
     {
+        Queue<VoxelCondition> queue = new();
         int height = (int)(biometype.maxTrunkHeight *
                            CustomNoise.Get2DPerlin(new Vector2(position.x, position.z), biometype.trunkOffest, biometype.trunkScale));
         if (height < biometype.minTrunkHeight)
@@ -39,7 +42,9 @@ public class NatureStructure
                 }
             }
         }
-        
+
+        return queue;
+
     }
 }
  

@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: LeaveTypeData
   m_EditorClassIdentifier: 
   isSolid: 1
-  isTransparent: 0
+  isTransparent: 1
+  isLeave: 1
   blockName: Leave
-  backFaceTexture: 180
-  frontFaceTexture: 180
-  topFaceTexture: 180
-  bottomFaceTexture: 180
-  leftFaceTexture: 180
-  rightFaceTexture: 180
+  backFaceTexture: 16
+  frontFaceTexture: 16
+  topFaceTexture: 16
+  bottomFaceTexture: 16
+  leftFaceTexture: 16
+  rightFaceTexture: 16
