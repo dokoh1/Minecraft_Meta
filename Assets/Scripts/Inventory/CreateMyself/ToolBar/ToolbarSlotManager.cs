@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 //각 slot의 정보를 불러오는 클래스
 public class ToolbarSlotManager : MonoBehaviour, IDropHandler
@@ -12,9 +13,8 @@ public class ToolbarSlotManager : MonoBehaviour, IDropHandler
     private Sprite _choosedItemSprite;
     //슬롯의 슬롯 번호를 저장하는 변수
     public int slotIndex;
-    //동기화 그룹 설정용으로 static배열 추가
-    public static ToolbarSlotManager[] PlayerSlots = new ToolbarSlotManager[18];
-    
+    //슬롯을 List로 관리
+    public static List<ToolbarSlotManager> AllSlots = new List<ToolbarSlotManager>();
     //드롭시 생성될 프리팹
     public GameObject itemDisplayPrefab;
     //슬롯에 위치할 아이템을 저장하는 변수
@@ -23,7 +23,8 @@ public class ToolbarSlotManager : MonoBehaviour, IDropHandler
     //Start()에서 자동으로 자기 등록
     private void Start()
     {
-        PlayerSlots[slotIndex] = this;
+        //PlayerSlots[slotIndex] = this;
+        AllSlots.Add(this);
     }
     
     //슬롯에 드롭이 끝났을 떄의 이벤트
@@ -49,10 +50,6 @@ public class ToolbarSlotManager : MonoBehaviour, IDropHandler
         {
             Destroy(child.gameObject);
         }
-        
-        //부모를 이 슬롯으로 설정
-        //InventorySlotManager.dragClone.transform.SetParent(transform);
-        //InventorySlotManager.dragClone.transform.localPosition = Vector3.zero;
         
         //디스플레이 프리팹 생성 및 부모를 슬롯으로 지정
         _itemDisplay = Instantiate(itemDisplayPrefab,transform);
@@ -84,26 +81,18 @@ public class ToolbarSlotManager : MonoBehaviour, IDropHandler
         _itemDisplay = Instantiate(itemDisplayPrefab,transform);
         _itemDisplay.GetComponent<Image>().sprite = sprite;
         _itemDisplay.transform.localPosition = Vector3.zero;
+        
         _choosedItemSprite = sprite;
-        
-        // if (_choosedItemSprite != null)
-        // {
-        //     _choosedItemSprite = _itemTypeData2.ItemSprite;
-        //     GetComponent<Image>().sprite = _choosedItemSprite;
-        // }
-        
         slotEnum = id;
         hasBlock = true;
         
-        //아이템 추가 시 동일 슬롯 index에 있는 동기화 슬롯도 갱신
-        for (int i = 0; i < PlayerSlots.Length; i++)
+        //동기화 slotIndex 같은 슬롯 전부 업데이트
+        foreach (ToolbarSlotManager slot in AllSlots)
         {
-            if(i == slotIndex) continue;
-
-            if (PlayerSlots[i] != null && PlayerSlots[i].slotEnum != id)
+            if(slot == this) continue;
+            if (slot.slotIndex == this.slotIndex)
             {
-                //중복 호출 방지용 메소드
-                PlayerSlots[i].SetSync(sprite, id);
+                slot.SetSync(sprite,id);
             }
         }
     }
@@ -115,12 +104,11 @@ public class ToolbarSlotManager : MonoBehaviour, IDropHandler
             Destroy(child.gameObject);
         }
 
-        if (sprite != null)
-        {
-            _choosedItemSprite = sprite;
-            GetComponent<Image>().sprite = _choosedItemSprite;
-        }
+        _itemDisplay = Instantiate(itemDisplayPrefab, transform);
+        _itemDisplay.GetComponent<Image>().sprite = sprite;
+        _itemDisplay.transform.localPosition = Vector3.zero;
         
+        _choosedItemSprite = sprite;
         hasBlock = true;
         slotEnum = id;
     }

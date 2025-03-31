@@ -1687,6 +1687,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotEnum: 3
   hasBlock: 1
+  slotIndex: 2
   itemDisplayPrefab: {fileID: 7729391452720992396, guid: 30461ee50e0f6e547b0ef74fad687c48, type: 3}
 --- !u!1 &305297897 stripped
 GameObject:
@@ -1725,7 +1726,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1 &307465519
 GameObject:
   m_ObjectHideFlags: 0
@@ -2193,7 +2194,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &488020827
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2465,7 +2466,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &537534933
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2634,7 +2635,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1 &634597354 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6616280486558709021, guid: defc5a7ad8e44be419582f5a86ccb68e, type: 3}
@@ -2904,7 +2905,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &654597576
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3058,7 +3059,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &669612475
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3473,7 +3474,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1 &705522255 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6616280486558709021, guid: defc5a7ad8e44be419582f5a86ccb68e, type: 3}
@@ -4331,7 +4332,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1 &853600700 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6616280486558709021, guid: defc5a7ad8e44be419582f5a86ccb68e, type: 3}
@@ -4515,7 +4516,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1 &873571770 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6616280486558709021, guid: defc5a7ad8e44be419582f5a86ccb68e, type: 3}
@@ -4553,7 +4554,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &873726995
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4702,7 +4703,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &882865406
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4967,7 +4968,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1 &917716842
 GameObject:
   m_ObjectHideFlags: 0
@@ -5387,7 +5388,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &1023740626
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5543,7 +5544,7 @@ MonoBehaviour:
   icon: {fileID: 612942163, guid: 10fb9dc30c7a04542a294736b4b013cc, type: 3}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &1032301902
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5692,7 +5693,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1 &1075887977 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6616280486558709021, guid: defc5a7ad8e44be419582f5a86ccb68e, type: 3}
@@ -6014,6 +6015,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotEnum: 0
   hasBlock: 0
+  slotIndex: 0
   itemDisplayPrefab: {fileID: 7729391452720992396, guid: 30461ee50e0f6e547b0ef74fad687c48, type: 3}
 --- !u!1 &1169139722 stripped
 GameObject:
@@ -6052,7 +6054,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &1178645156
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6433,7 +6435,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &1230015459
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6573,6 +6575,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotEnum: 0
   hasBlock: 0
+  slotIndex: 4
   itemDisplayPrefab: {fileID: 7729391452720992396, guid: 30461ee50e0f6e547b0ef74fad687c48, type: 3}
 --- !u!1 &1235210878 stripped
 GameObject:
@@ -6609,6 +6612,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotEnum: 0
   hasBlock: 0
+  slotIndex: 7
   itemDisplayPrefab: {fileID: 7729391452720992396, guid: 30461ee50e0f6e547b0ef74fad687c48, type: 3}
 --- !u!1 &1242692153 stripped
 GameObject:
@@ -6874,6 +6878,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotEnum: 0
   hasBlock: 0
+  slotIndex: 6
   itemDisplayPrefab: {fileID: 7729391452720992396, guid: 30461ee50e0f6e547b0ef74fad687c48, type: 3}
 --- !u!1001 &1288292883
 PrefabInstance:
@@ -7025,6 +7030,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotEnum: 0
   hasBlock: 0
+  slotIndex: 6
   itemDisplayPrefab: {fileID: 7729391452720992396, guid: 30461ee50e0f6e547b0ef74fad687c48, type: 3}
 --- !u!1 &1300428593 stripped
 GameObject:
@@ -7073,7 +7079,7 @@ MonoBehaviour:
   icon: {fileID: 1400625520, guid: 10fb9dc30c7a04542a294736b4b013cc, type: 3}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &1352865274
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7252,7 +7258,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &1355046196
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7638,7 +7644,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1 &1412325233 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6616280486558709021, guid: defc5a7ad8e44be419582f5a86ccb68e, type: 3}
@@ -7676,7 +7682,7 @@ MonoBehaviour:
   icon: {fileID: -1843937187, guid: 10fb9dc30c7a04542a294736b4b013cc, type: 3}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &1431381224
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7814,6 +7820,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotEnum: 0
   hasBlock: 0
+  slotIndex: 5
   itemDisplayPrefab: {fileID: 7729391452720992396, guid: 30461ee50e0f6e547b0ef74fad687c48, type: 3}
 --- !u!1 &1454479353 stripped
 GameObject:
@@ -8029,6 +8036,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotEnum: 4
   hasBlock: 1
+  slotIndex: 1
   itemDisplayPrefab: {fileID: 7729391452720992396, guid: 30461ee50e0f6e547b0ef74fad687c48, type: 3}
 --- !u!1 &1480618947
 GameObject:
@@ -8113,7 +8121,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1 &1507498339 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6616280486558709021, guid: defc5a7ad8e44be419582f5a86ccb68e, type: 3}
@@ -8271,7 +8279,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1 &1555170033 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6616280486558709021, guid: defc5a7ad8e44be419582f5a86ccb68e, type: 3}
@@ -8384,7 +8392,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1 &1588929896
 GameObject:
   m_ObjectHideFlags: 0
@@ -8654,6 +8662,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotEnum: 0
   hasBlock: 0
+  slotIndex: 1
   itemDisplayPrefab: {fileID: 7729391452720992396, guid: 30461ee50e0f6e547b0ef74fad687c48, type: 3}
 --- !u!1001 &1612044760
 PrefabInstance:
@@ -8803,7 +8812,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &1644715470
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8952,7 +8961,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1 &1646682540 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6616280486558709021, guid: defc5a7ad8e44be419582f5a86ccb68e, type: 3}
@@ -8990,7 +8999,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1 &1647476430 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6616280486558709021, guid: defc5a7ad8e44be419582f5a86ccb68e, type: 3}
@@ -9028,7 +9037,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &1648391157
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9177,7 +9186,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &1660093148
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9436,7 +9445,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &1676372288
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9592,7 +9601,7 @@ MonoBehaviour:
   icon: {fileID: 82718829, guid: 10fb9dc30c7a04542a294736b4b013cc, type: 3}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1 &1701546389 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6616280486558709021, guid: defc5a7ad8e44be419582f5a86ccb68e, type: 3}
@@ -9630,7 +9639,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1 &1731160104 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6616280486558709021, guid: defc5a7ad8e44be419582f5a86ccb68e, type: 3}
@@ -9784,7 +9793,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &1732143233
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9935,6 +9944,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotEnum: 0
   hasBlock: 0
+  slotIndex: 5
   itemDisplayPrefab: {fileID: 7729391452720992396, guid: 30461ee50e0f6e547b0ef74fad687c48, type: 3}
 --- !u!1 &1770273309
 GameObject:
@@ -10019,6 +10029,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotEnum: 0
   hasBlock: 0
+  slotIndex: 2
   itemDisplayPrefab: {fileID: 7729391452720992396, guid: 30461ee50e0f6e547b0ef74fad687c48, type: 3}
 --- !u!1 &1796383209 stripped
 GameObject:
@@ -10057,7 +10068,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1 &1808945682 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6616280486558709021, guid: defc5a7ad8e44be419582f5a86ccb68e, type: 3}
@@ -10077,6 +10088,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotEnum: 0
   hasBlock: 0
+  slotIndex: 7
   itemDisplayPrefab: {fileID: 7729391452720992396, guid: 30461ee50e0f6e547b0ef74fad687c48, type: 3}
 --- !u!1 &1829694264 stripped
 GameObject:
@@ -10115,7 +10127,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1 &1834083427 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6616280486558709021, guid: defc5a7ad8e44be419582f5a86ccb68e, type: 3}
@@ -10153,7 +10165,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &1835912856
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10302,7 +10314,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &1879793544
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10451,7 +10463,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &1885840578
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10600,7 +10612,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &1888530635
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10749,7 +10761,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1 &1894016560 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6616280486558709021, guid: defc5a7ad8e44be419582f5a86ccb68e, type: 3}
@@ -10785,6 +10797,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotEnum: 0
   hasBlock: 0
+  slotIndex: 8
   itemDisplayPrefab: {fileID: 7729391452720992396, guid: 30461ee50e0f6e547b0ef74fad687c48, type: 3}
 --- !u!1001 &1906168128
 PrefabInstance:
@@ -10934,7 +10947,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!224 &1917065599 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1395886430188553142, guid: defc5a7ad8e44be419582f5a86ccb68e, type: 3}
@@ -10954,6 +10967,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotEnum: 0
   hasBlock: 1
+  slotIndex: 0
   itemDisplayPrefab: {fileID: 7729391452720992396, guid: 30461ee50e0f6e547b0ef74fad687c48, type: 3}
 --- !u!1 &1930587601 stripped
 GameObject:
@@ -10992,7 +11006,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1001 &1949612472
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11145,7 +11159,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1 &1957846749 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6616280486558709021, guid: defc5a7ad8e44be419582f5a86ccb68e, type: 3}
@@ -11183,7 +11197,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1 &1960326654
 GameObject:
   m_ObjectHideFlags: 0
@@ -11369,6 +11383,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotEnum: 14
   hasBlock: 1
+  slotIndex: 3
   itemDisplayPrefab: {fileID: 7729391452720992396, guid: 30461ee50e0f6e547b0ef74fad687c48, type: 3}
 --- !u!1 &1998293297 stripped
 GameObject:
@@ -11405,6 +11420,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotEnum: 0
   hasBlock: 0
+  slotIndex: 3
   itemDisplayPrefab: {fileID: 7729391452720992396, guid: 30461ee50e0f6e547b0ef74fad687c48, type: 3}
 --- !u!1 &2020282875 stripped
 GameObject:
@@ -11443,7 +11459,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   draggableItemPrefab: {fileID: 7729391452720992396, guid: d8d5b31583b96de49a37e98c0cc0bf2a, type: 3}
   draggableItemParent: {fileID: 917716843}
-  toolbarSlotManager: {fileID: 0}
+  startParent: {fileID: 0}
 --- !u!1 &2044299945
 GameObject:
   m_ObjectHideFlags: 0
@@ -11783,6 +11799,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotEnum: 0
   hasBlock: 0
+  slotIndex: 4
   itemDisplayPrefab: {fileID: 7729391452720992396, guid: 30461ee50e0f6e547b0ef74fad687c48, type: 3}
 --- !u!1 &2087533384
 GameObject:
@@ -11986,6 +12003,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   slotEnum: 0
   hasBlock: 0
+  slotIndex: 8
   itemDisplayPrefab: {fileID: 7729391452720992396, guid: 30461ee50e0f6e547b0ef74fad687c48, type: 3}
 --- !u!1001 &4241774089146928512
 PrefabInstance:
