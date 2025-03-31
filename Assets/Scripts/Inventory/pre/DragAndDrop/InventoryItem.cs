@@ -128,7 +128,6 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         }
     }
     
-    
     //마우스 버튼을 놓을 때 호출.(드래그 종료)
     public void OnEndDrag(PointerEventData eventData)
     {
