@@ -11,14 +11,23 @@ public class ToolbarSlotManager : MonoBehaviour, IDropHandler
     public BlockTypeEnum slotEnum;
     public bool hasBlock = false;
     private Sprite _choosedItemSprite;
-
+    
+    //드롭시 생성될 프리팹
     public GameObject itemDisplayPrefab;
+    //슬롯에 위치할 아이템을 저장하는 변수
+    private GameObject _itemDisplay;
+    
+    //슬롯에 드롭이 끝났을 떄의 이벤트
     public void OnDrop(PointerEventData eventData)
     {
         //드래그된 오브젝트에 DraggableItem 스크립트가 붙어있는지 확인
         DraggableItem dragged = eventData.pointerDrag.GetComponent<DraggableItem>();
-        if (dragged != null)
+        if (dragged != null) 
         {
+            _itemDisplay = Instantiate(itemDisplayPrefab);
+            //생성된 프리팹 이미지가 슬롯의 위치에 맞게 설정되도록
+            itemDisplayPrefab.transform.SetParent(transform.root);
+            Debug.Log("드롭 성공");
             //슬롯 이미지 변경
             GetComponent<Image>().sprite = dragged.icon;
             
@@ -28,6 +37,9 @@ public class ToolbarSlotManager : MonoBehaviour, IDropHandler
             
             //드래그 복사본 제거
             Destroy(dragged.gameObject);
+            
+            SetSlotItem(_choosedItemSprite, slotEnum);
+            //itemDisplayPrefab.GetComponent<Image>().sprite = _choosedItemSprite;
         }
     }
     
@@ -40,8 +52,6 @@ public class ToolbarSlotManager : MonoBehaviour, IDropHandler
             Destroy(child.gameObject);
         }
         
-        
-        /*
         if (_choosedItemSprite != null)
         {
             _choosedItemSprite = _itemTypeData2.ItemSprite;
@@ -49,6 +59,6 @@ public class ToolbarSlotManager : MonoBehaviour, IDropHandler
         }
         hasBlock = true;
         slotEnum = id;
-        */
+        
     }
 }

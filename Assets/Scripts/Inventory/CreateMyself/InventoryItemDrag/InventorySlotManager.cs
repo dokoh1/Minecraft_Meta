@@ -11,7 +11,9 @@ public class InventorySlotManager : MonoBehaviour, IBeginDragHandler, IDragHandl
     public Sprite icon;
     //드래그할 때 생성될 프리팹
     public GameObject draggableItemPrefab;
+    //생성된 프리팹을 캔버스 UI의 최상단에 표시하기 위함.
     public Transform draggableItemParent;
+    public ToolbarSlotManager toolbarSlotManager;
     
     //복사본을 따로 저장할 변수
     private GameObject _dragClone;
@@ -21,7 +23,7 @@ public class InventorySlotManager : MonoBehaviour, IBeginDragHandler, IDragHandl
     {
         //드래그용 프리팹 생성하여 마우스 커서를 따라감
         _dragClone = Instantiate(draggableItemPrefab, draggableItemParent);
-        _dragClone.transform.position = Input.mousePosition;
+        _dragClone.transform.position = Input.mousePosition; 
         
         //정보 복사
         DraggableItem draggableItem = _dragClone.GetComponent<DraggableItem>();
@@ -37,7 +39,6 @@ public class InventorySlotManager : MonoBehaviour, IBeginDragHandler, IDragHandl
         RectTransform rt = _dragClone.GetComponent<RectTransform>();
         rt.sizeDelta = new Vector2(40, 40);
     }
-
     
     public void OnDrag(PointerEventData eventData)
     {
@@ -49,9 +50,13 @@ public class InventorySlotManager : MonoBehaviour, IBeginDragHandler, IDragHandl
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (_dragClone != null)
-        {
-            Destroy(_dragClone);
-        }
+        RectTransform parentRect = _dragClone.GetComponent<RectTransform>();
+        
+        // if (_dragClone != null)
+        // {
+        //     Destroy(_dragClone);
+        // }
+        
+        toolbarSlotManager.OnDrop(eventData);
     }
 }

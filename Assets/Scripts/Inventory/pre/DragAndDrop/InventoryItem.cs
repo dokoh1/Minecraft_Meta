@@ -47,7 +47,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             image = GetComponent<Image>();
 
         //그래도 없으면 그냥 중단 (에러 방지)
-        if (image == null)
+        if (image == null) 
         {
             Debug.LogWarning($"[InventoryItem] image가 연결되어 있지 않음 (오브젝트 이름: {gameObject.name})");
             return;
