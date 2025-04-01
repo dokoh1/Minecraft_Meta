@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: GoldTypeData
   m_EditorClassIdentifier: 
   isSolid: 1
+  isTransparent: 0
+  isLeave: 0
   blockName: Gold
   backFaceTexture: 32
   frontFaceTexture: 32

@@ -11,7 +11,7 @@ public class DebugText : MonoBehaviour
     
     private float _frame;
     private float _timer;
-
+    
     private int _halfVoxels;
     private int _halfChunks;
 
@@ -32,7 +32,9 @@ public class DebugText : MonoBehaviour
         sb.AppendLine("CopyCraft");
         sb.AppendLine($"{_frame} fps");
         sb.AppendLine($"XYZ : {Mathf.FloorToInt(player.position.x) - _halfVoxels} / {Mathf.FloorToInt(player.position.y)} / {Mathf.FloorToInt(player.position.z) - _halfVoxels}");
-        sb.AppendLine($"Chunk : {coord.X_int - _halfChunks} / {coord.Z_int - _halfChunks}");
+        if (coord == null)
+            return;
+        sb.AppendLine($"Chunk : {coord.X - _halfChunks} / {coord.Z - _halfChunks}");
         sb.AppendLine("");
         
         _text.text = sb.ToString();

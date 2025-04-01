@@ -26,9 +26,10 @@ public static class CustomNoise
         float ba = Mathf.PerlinNoise(y, x);
         float cb = Mathf.PerlinNoise(z, y);
         float ca = Mathf.PerlinNoise(z, x);
+        
         if ((ab + bc + ac + ba + cb + ca) / 6 > threshold)
             return true;
-        else
-            return false;
+        
+        return false;
     }
 }

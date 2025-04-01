@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class NatureStructure
 {
-    [ItemCanBeNull]
     public Queue<VoxelCondition> MakeTree(Vector3 position, BiomeTypeData biometype)
     {
         Queue<VoxelCondition> queue = new();
