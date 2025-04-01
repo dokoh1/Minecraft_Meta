@@ -65,7 +65,6 @@ public class Chunk
         _coord = coord;
         _blockData = blockData;
         _terrain = terrain;
-
     }
     
     public void Init()

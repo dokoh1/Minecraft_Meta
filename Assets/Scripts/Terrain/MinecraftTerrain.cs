@@ -63,8 +63,6 @@ public class MinecraftTerrain : MonoBehaviour
         // 게임 세팅 파일 입력
         string jsonImport = File.ReadAllText(Application.dataPath + "/Resources/settings.cfg");
         setting = JsonUtility.FromJson<Settings>(jsonImport);
-        
-        Random.InitState(setting.seed);
 
         Shader.SetGlobalFloat("MinGlobalLight", VoxelData.minLight);
         Shader.SetGlobalFloat("MaxGlobalLight", VoxelData.maxLight);
