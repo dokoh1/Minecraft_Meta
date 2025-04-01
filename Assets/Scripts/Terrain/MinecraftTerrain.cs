@@ -16,6 +16,7 @@ public class MinecraftTerrain : MonoBehaviour
     public Transform player;
     public GameObject debugUI;
 
+    
     [Range(0f, 1f)]
     public float globalLight;
 
