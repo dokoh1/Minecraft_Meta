@@ -7,10 +7,13 @@ public static class VoxelData
     public static readonly int ChunkHeight = 256;
 
     public static readonly int TextureAtlasSize = 16;
-    public static readonly int TerrainSize = 1000;
-    public static readonly int InitSize = 4;
+    public static readonly int TerrainSize = 100;
 
-    public static readonly int ViewDistance = 10;
+    //Light Value
+    public static float minLight = 0.1f;
+    public static float maxLight = 0.9f;
+    public static float lightFalloff = 0.3f;
+    
     public static int TerrainInVoxelSize
     {
         get { return TerrainSize * ChunkWidth; }
@@ -22,7 +25,7 @@ public static class VoxelData
         get {return 1f / TextureAtlasSize; }
     }
     
-    public static readonly Vector3[] VoxelVertes = 
+    public static readonly Vector3[] VoxelVertes = new Vector3[8]
     {
         new Vector3(0.0f, 0.0f, 0.0f),
         new Vector3(1.0f, 0.0f, 0.0f),

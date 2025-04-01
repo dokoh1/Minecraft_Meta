@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: SandTypeData
   m_EditorClassIdentifier: 
   isSolid: 1
+  isDrawing: 0
+  isLeave: 0
+  transparency: 0
   blockName: Sand
   backFaceTexture: 18
   frontFaceTexture: 18

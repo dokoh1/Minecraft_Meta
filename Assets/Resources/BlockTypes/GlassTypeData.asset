@@ -13,7 +13,9 @@ MonoBehaviour:
   m_Name: GlassTypeData
   m_EditorClassIdentifier: 
   isSolid: 1
-  isTransparent: 1
+  isDrawing: 1
+  isLeave: 0
+  transparency: 1
   blockName: Glass
   backFaceTexture: 3
   frontFaceTexture: 3

@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: GrassTypeData
   m_EditorClassIdentifier: 
   isSolid: 1
+  isDrawing: 0
+  isLeave: 0
+  transparency: 0
   blockName: Grass
   backFaceTexture: 3
   frontFaceTexture: 3
