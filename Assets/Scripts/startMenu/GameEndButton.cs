@@ -2,10 +2,16 @@ using UnityEngine;
 
 public class GameEndButton : MonoBehaviour
 {
-    //Application.Quit();
-    
+    public void Start()
+    {
+        
+    }
 
-    public void Quit()
+    public void Update()
+    {
+        
+    }
+    public void QuitGame()
     {
         Application.Quit();
         Debug.Log("Quit");
