@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: DirtTypeData
   m_EditorClassIdentifier: 
   isSolid: 1
+  isDrawing: 0
+  isLeave: 0
+  transparency: 0
   blockName: Dirt
   backFaceTexture: 2
   frontFaceTexture: 2

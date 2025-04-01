@@ -36,6 +36,5 @@ public class ItemData2 : MonoBehaviour
       ItemDataDictionary.Add(BlockTypeEnum.Stone,StoneData);
       ItemDataDictionary.Add(BlockTypeEnum.Dirt,DirtData);
       ItemDataDictionary.Add(BlockTypeEnum.Grass,GrassData);
-      ItemDataDictionary.Add(BlockTypeEnum.OakWood,WoodData);
    }
 }

@@ -9,6 +9,7 @@ public class BlockData : MonoBehaviour
     public Material material;
     public Material transparentMaterial;
     public Material leaveMaterial;
+
     // public Material leavesMaterial;
     
     private void Awake()

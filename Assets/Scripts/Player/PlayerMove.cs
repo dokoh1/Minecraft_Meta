@@ -166,8 +166,8 @@ public class PlayerMove : MonoBehaviour
     
     private void Rotate()
     {
-        float mouseX = Input.GetAxisRaw("Mouse X") * _mouseSpeed;
-        float mouseY = Input.GetAxisRaw("Mouse Y") * _mouseSpeed;
+        float mouseX = Input.GetAxisRaw("Mouse X") * _mouseSpeed * _terrain.setting.mouseSensitivity;
+        float mouseY = Input.GetAxisRaw("Mouse Y") * _mouseSpeed * _terrain.setting.mouseSensitivity;
         
         _rotateX -= mouseY;
         _rotateY += mouseX;

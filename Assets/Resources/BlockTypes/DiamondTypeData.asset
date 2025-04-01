@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: DiamondTypeData
   m_EditorClassIdentifier: 
   isSolid: 1
+  isTransparent: 0
+  isLeave: 0
   blockName: Diamond
   backFaceTexture: 50
   frontFaceTexture: 50

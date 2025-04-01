@@ -13,6 +13,9 @@ MonoBehaviour:
   m_Name: CoalTypeData
   m_EditorClassIdentifier: 
   isSolid: 1
+  isDrawing: 0
+  isLeave: 0
+  transparency: 0
   blockName: Coal
   backFaceTexture: 34
   frontFaceTexture: 34
