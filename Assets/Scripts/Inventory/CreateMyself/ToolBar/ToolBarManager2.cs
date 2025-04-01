@@ -3,6 +3,7 @@ using UnityEngine;
 //PlayerToolbarSlot 1~9에 위치
 //플레이어가 선택한 슬롯을 추적하고 해당 아이템 반환
 public class ToolBarManager2 : MonoBehaviour
+
 {
     //highlightFrame은 플레이어가 선택한 슬롯을 알려주고 강조해주는 용도이다.
     public RectTransform highlightFrame;
