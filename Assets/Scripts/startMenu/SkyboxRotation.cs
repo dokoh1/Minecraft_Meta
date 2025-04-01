@@ -17,7 +17,7 @@ public class SkyboxRotation : MonoBehaviour
     //     RenderSettings.skybox.SetFloat("_Rotation", Mathf.Lerp(0, 1, _degree));
     //     
     // }
-    public float rotationSpeed = 2.0f;
+    public float rotationSpeed = 1.0f;
     
     void Update()
     {
