@@ -12,8 +12,10 @@ GameObject:
   - component: {fileID: 8897305101318752330}
   - component: {fileID: 2796794005910213222}
   - component: {fileID: 2839797619659407900}
+  - component: {fileID: 5933339930033913957}
+  - component: {fileID: 4031068143550093653}
   m_Layer: 5
-  m_Name: InventoryItem
+  m_Name: InventoryItemDraggable
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -91,3 +93,29 @@ MonoBehaviour:
   image: {fileID: 0}
   copyItem: {fileID: 0}
   parentAfterDrag: {fileID: 0}
+--- !u!114 &5933339930033913957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7729391452720992396}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f213d74f0791eb4dbf546235e9f6325, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  blockID: 0
+  icon: {fileID: 0}
+--- !u!225 &4031068143550093653
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7729391452720992396}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0

@@ -1,6 +1,9 @@
 using UnityEngine;
 
+//PlayerToolbarSlot 1~9에 위치
+//플레이어가 선택한 슬롯을 추적하고 해당 아이템 반환
 public class ToolBarManager2 : MonoBehaviour
+
 {
     //highlightFrame은 플레이어가 선택한 슬롯을 알려주고 강조해주는 용도이다.
     public RectTransform highlightFrame;
@@ -8,6 +11,8 @@ public class ToolBarManager2 : MonoBehaviour
     public ToolbarSlotManager[] toolbarSlots = new ToolbarSlotManager[9];
     //현재 선택된 슬롯의 인덱스(highlightFrame이 게임 시작할 때 맨 앞 슬롯에 위치하므로 0으로 초기화)
     private int currentSlotIndex = 0; 
+    //시작할 때 highlightFrame위치 조정할 값
+    private float _initSetting = 50;
     
     private BlockTypeEnum[] _itemName = new BlockTypeEnum[9];
     
@@ -20,8 +25,10 @@ public class ToolBarManager2 : MonoBehaviour
         {
             //toolbarSlot의 각 위치를 SlotPosition이라는 변수에 저장하여 highlightFrame의 위치에 새로 할당해준다.
             //highlightFrame의 위치 업데이트
-            Vector3 SlotPosition = toolbarSlots[currentSlotIndex].transform.position;
-            highlightFrame.position = SlotPosition; //new Vector3(SlotPosition.x,SlotPosition.y,SlotPosition.z);
+            Vector3 worldPos = toolbarSlots[currentSlotIndex].transform.position;
+            float x = worldPos.x + _initSetting;
+            float y = worldPos.y + _initSetting;
+            highlightFrame.position = new Vector3(x,y,highlightFrame.position.z); //new Vector3(SlotPosition.x,SlotPosition.y,SlotPosition.z);
         }
     }
 

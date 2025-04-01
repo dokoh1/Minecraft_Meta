@@ -8,7 +8,7 @@ public class ItemInfoGiveTest : MonoBehaviour
     public ItemData2 itemData;
     public ToolBarManager2 toolBarManager;
     
-    public void Update()
+    public void Update()                                                                                  
     {
         ClickItemImage();
     }
