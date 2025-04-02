@@ -46,7 +46,6 @@ public class Chunk
         }
     }
     
-    
     public Chunk(Coord coord)
     {
         _coord = coord;
