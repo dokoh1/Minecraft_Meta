@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8c3c4720acb4d3444b37d483dfcb061a, type: 3}
-  m_Name: SnowTypeData
+  m_Name: SnowWoodTypeData
   m_EditorClassIdentifier: 
   isSolid: 1
   isDrawing: 0
   isLeave: 0
   transparency: 0
-  blockName: Snow
-  backFaceTexture: 68
-  frontFaceTexture: 68
-  topFaceTexture: 66
-  bottomFaceTexture: 2
-  leftFaceTexture: 68
-  rightFaceTexture: 68
+  blockName: SnowWood
+  backFaceTexture: 116
+  frontFaceTexture: 116
+  topFaceTexture: 21
+  bottomFaceTexture: 21
+  leftFaceTexture: 116
+  rightFaceTexture: 116

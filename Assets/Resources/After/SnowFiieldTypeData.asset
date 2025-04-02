@@ -10,25 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 252c6485eccf3674ab8a955eb23d5abd, type: 3}
-  m_Name: DesertTypeData
+  m_Name: SnowFiieldTypeData
   m_EditorClassIdentifier: 
-  biomeName: Desert
-  offset: 6545
+  biomeName: SnowField
+  offset: 3656
   scale: 0.058
-  temperature: 1
-  terrainHeight: 10
-  terrainScale: 0.05
-  surfaceBlock: 5
-  subSurfaceBlock: 5
-  treeChoice: 1
-  wood: 15
-  treeZoneScale: 1.06
-  treeZoneThreshold: 0.75
-  treePlaceScale: 7.5
+  terrainHeight: 100
+  terrainScale: 0.25
+  surfaceBlock: 6
+  subSurfaceBlock: 6
+  treeChoice: 0
+  wood: 14
+  treeZoneScale: 1.3
+  treeZoneThreshold: 0.6
+  treePlaceScale: 15
   treePlaceThreshold: 0.8
   placeMajor: 1
-  maxTrunkHeight: 6
-  minTrunkHeight: 4
+  maxTrunkHeight: 10
+  minTrunkHeight: 5
   trunkScale: 3
   trunkOffest: 0
   loads:

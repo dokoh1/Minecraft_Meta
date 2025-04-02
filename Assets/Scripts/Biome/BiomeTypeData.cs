@@ -1,19 +1,36 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
+public enum biomeTreeChoice
+{
+    tree,
+    Cacti,
+}
 [CreateAssetMenu(fileName = "BiomeTypeData", menuName = "Minecraft/BiomeTypeData")]
 public class BiomeTypeData : ScriptableObject
 {
     //biome 이름
     public string biomeName;
-
-    //기본 지형 높이
-    public int solidGroundHeight; 
+    
+    //PerlinNoise
+    public int offset;
+    public float scale;
+    
+    //기온
+    public float temperature;
+    
     //지형 높이
     public int terrainHeight;
     //지형 scale
     public float terrainScale;
+
+    public BlockTypeEnum surfaceBlock;
+    public BlockTypeEnum subSurfaceBlock;
+
+    [FormerlySerializedAs("TreeChoice")] [Header("Trees")] 
+    public biomeTreeChoice treeChoice;
+    public BlockTypeEnum wood;
     
-    [Header("Trees")] 
     public float treeZoneScale;
 
     [Range(0.1f, 1f)] 
@@ -22,6 +39,8 @@ public class BiomeTypeData : ScriptableObject
     
     [Range(0.1f, 1f)]
     public float treePlaceThreshold;
+
+    public bool placeMajor = true;
 
     public int maxTrunkHeight;
     public int minTrunkHeight;

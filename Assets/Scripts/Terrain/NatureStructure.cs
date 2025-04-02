@@ -14,9 +14,12 @@ public class NatureStructure
 
         for (int i = 1; i < height; i++)
         {
-            queue.Enqueue(new VoxelCondition(new Vector3(position.x, position.y + i, position.z), BlockTypeEnum.Wood));
+            queue.Enqueue(new VoxelCondition(new Vector3(position.x, position.y + i, position.z), biometype.wood));
         }
-
+        
+        if (biometype.treeChoice == biomeTreeChoice.Cacti)
+            return queue;
+        
         for (int x = -2; x < 3; x++)
         {
             for (int z = -2; z < 3; z++)
@@ -41,9 +44,7 @@ public class NatureStructure
                 }
             }
         }
-
         return queue;
-
     }
 }
  

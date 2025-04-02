@@ -13,13 +13,57 @@ MonoBehaviour:
   m_Name: ForestTypeData
   m_EditorClassIdentifier: 
   biomeName: Forest
-  solidGroundHeight: 42
-  terrainHeight: 42
-  terrainScale: 0.25
-  treeZoneScale: 0
-  treeZoneThreshold: 0.1
-  treePlaceScale: 0
-  treePlaceThreshold: 0.1
-  maxTreeHeights: 0
-  minTreeHeights: 0
-  loads: []
+  offset: 87544
+  scale: 0.17
+  temperature: 0.3
+  terrainHeight: 80
+  terrainScale: 0
+  surfaceBlock: 3
+  subSurfaceBlock: 2
+  treeChoice: 0
+  wood: 12
+  treeZoneScale: 1.3
+  treeZoneThreshold: 0.384
+  treePlaceScale: 5
+  treePlaceThreshold: 0.755
+  placeMajor: 1
+  maxTrunkHeight: 12
+  minTrunkHeight: 7
+  trunkScale: 2
+  trunkOffest: 0
+  loads:
+  - blockName: Dirt
+    blockType: 2
+    minHeight: 1
+    maxHeight: 64
+    scale: 0.06
+    threshold: 0.7
+    noiseOffset: 0
+  - blockName: Diamond
+    blockType: 7
+    minHeight: 1
+    maxHeight: 16
+    scale: 0.15
+    threshold: 0.75
+    noiseOffset: 0
+  - blockName: Gold
+    blockType: 8
+    minHeight: 1
+    maxHeight: 32
+    scale: 0.12
+    threshold: 0.65
+    noiseOffset: 0
+  - blockName: Coal
+    blockType: 10
+    minHeight: 1
+    maxHeight: 128
+    scale: 0.08
+    threshold: 0.8
+    noiseOffset: 0
+  - blockName: Sand
+    blockType: 5
+    minHeight: 20
+    maxHeight: 50
+    scale: 0.07
+    threshold: 0.7
+    noiseOffset: 0
