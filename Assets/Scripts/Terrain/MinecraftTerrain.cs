@@ -40,6 +40,7 @@ public class MinecraftTerrain : MonoBehaviour
     private List<Coord> _activeChunks = new();
     private List<Coord> _previousActiveChunk;
 
+    
     //프레임 전 후 player의 Coord(x, z) 위치
     private Coord _playerPreviousCoord;
     
