@@ -1,7 +1,7 @@
 public enum BiomeTypeEnum
 {
     SnowField,
-    Hills,
+    Wasteland,
     Forest,
     Desert,
 }

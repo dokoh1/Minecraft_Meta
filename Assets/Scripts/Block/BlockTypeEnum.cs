@@ -14,4 +14,6 @@ public enum BlockTypeEnum
     Glass,
     Wood,
     Leave,
+    SnowWood,
+    Cacti,
 }

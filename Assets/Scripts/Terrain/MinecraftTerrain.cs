@@ -1,21 +1,21 @@
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
-using UnityEngine.Windows;
 using Input = UnityEngine.Input;
-using Random = UnityEngine.Random;
-using System.IO;
 using File = System.IO.File;
+using System.Linq;
 
 
 public class MinecraftTerrain : MonoBehaviour
 {
+    private static readonly int GlobalLight = Shader.PropertyToID("GlobalLight");
+    private static readonly int MaxGlobalLight = Shader.PropertyToID("MaxGlobalLight");
+    private static readonly int MinGlobalLight = Shader.PropertyToID("MinGlobalLight");
     public Settings setting;
     public BlockData blockData;
     public BiomeData biomeData;
     public Transform player;
     public GameObject debugUI;
-
     
     [Range(0f, 1f)]
     public float globalLight;
@@ -27,6 +27,7 @@ public class MinecraftTerrain : MonoBehaviour
     public Queue<Chunk> ChunksQueue = new();
     
     public Coord PlayerCoord;
+    private Camera _mainCamera;
     
     //캐릭터 spawn 포지션
     private Vector3 _spawnPosition;
@@ -38,6 +39,7 @@ public class MinecraftTerrain : MonoBehaviour
     private List<Coord> _activeChunks = new();
     private List<Coord> _previousActiveChunk;
 
+    
     //프레임 전 후 player의 Coord(x, z) 위치
     private Coord _playerPreviousCoord;
     
@@ -56,6 +58,7 @@ public class MinecraftTerrain : MonoBehaviour
     
     private void Start()
     {
+        _mainCamera = Camera.main;
         // 게임 세팅 파일 출력
         // string jsonExport = JsonUtility.ToJson(setting);
         // File.WriteAllText(Application.dataPath + "/Resources/settings.cfg", jsonExport);
@@ -64,8 +67,8 @@ public class MinecraftTerrain : MonoBehaviour
         string jsonImport = File.ReadAllText(Application.dataPath + "/Resources/settings.cfg");
         setting = JsonUtility.FromJson<Settings>(jsonImport);
 
-        Shader.SetGlobalFloat("MinGlobalLight", VoxelData.minLight);
-        Shader.SetGlobalFloat("MaxGlobalLight", VoxelData.maxLight);
+        Shader.SetGlobalFloat(MinGlobalLight, VoxelData.minLight);
+        Shader.SetGlobalFloat(MaxGlobalLight, VoxelData.maxLight);
         
         _natureStructure = new NatureStructure();
         _previousActiveChunk = new List<Coord>();
@@ -82,17 +85,12 @@ public class MinecraftTerrain : MonoBehaviour
         GenerateWorld();
         _playerPreviousCoord = Vector3ToCoord(player.position);
         
-    }
-
-    public void SetGlobalLight(float globalLight)
-    {
-        Shader.SetGlobalFloat("GlobalLight", globalLight);
-        if (Camera.main != null) 
-            Camera.main.backgroundColor = Color.Lerp(Night, Day, globalLight);
-    }
+    }   
     
     private void Update()
     {
+        Shader.SetGlobalFloat(GlobalLight, globalLight);
+        _mainCamera.backgroundColor = Color.Lerp(Night, Day, globalLight);
         PlayerCoord = Vector3ToCoord(player.transform.position);
         
         if (!PlayerCoord.Equals(_playerPreviousCoord))
@@ -158,7 +156,7 @@ public class MinecraftTerrain : MonoBehaviour
                     _chunks[coord.X, coord.Z] = new Chunk(coord, blockData, this);
                     _chunksToCreate.Add(coord);
                 }
-                _chunks[coord.X, coord.Z].Modifications.Enqueue(condition);
+                _chunks[coord.X, coord.Z].Modifications.Add(condition);
                 
             }
         }
@@ -257,7 +255,8 @@ public class MinecraftTerrain : MonoBehaviour
     public BlockTypeEnum TerrainCondition(Vector3 pos)
     {
         int yPos = Mathf.FloorToInt(pos.y);
-        BiomeTypeData hillsBiome = biomeData.BiomeTypeDictionary[BiomeTypeEnum.Hills];
+        
+        BiomeTypeData[] biomes = biomeData.BiomeTypeDictionary.Values.ToArray();
         
         // 월드 사이즈 넘는 곳은 air 블록을 배치한다.
         if (!IsVoxelInTerrain(pos))
@@ -267,16 +266,43 @@ public class MinecraftTerrain : MonoBehaviour
         if (yPos == 0)
             return BlockTypeEnum.BedRock;
         
-        //height PerlinNoise
-        int terrainHeight = Mathf.FloorToInt(hillsBiome.terrainHeight * CustomNoise.Get2DPerlin(new Vector2(pos.x, pos.z), 500, 
-            hillsBiome.terrainScale) + hillsBiome.solidGroundHeight);
+        //Biome PelinNoise
+        int solidGroundHeight = 42;
+        float sumOfHeights = 0f;
+        int count = 0;
+        float strongestHeight = 0f;
+        int strongestHeightIndex = 0;
 
+        for (int i = 0; i < biomes.Length; i++)
+        {
+            float weight = CustomNoise.Get2DPerlin(new Vector2(pos.x, pos.z), biomes[i].offset, biomes[i].scale);
+
+            if (weight > strongestHeight)
+            {
+                strongestHeight = weight;
+                strongestHeightIndex = i;
+            }
+            float height = biomes[i].terrainHeight * CustomNoise.Get2DPerlin(new Vector2(pos.x, pos.z), biomes[i].offset, biomes[i].terrainScale) * weight;
+
+            if (height > 0)
+            {
+                sumOfHeights += height;
+                count++;
+            }
+
+        }
+        BiomeTypeData biome = biomes[strongestHeightIndex];
+
+        sumOfHeights /= count;
+        
+        int terrainHeight = Mathf.FloorToInt(sumOfHeights + solidGroundHeight);
+        
         BlockTypeEnum voxelValue = BlockTypeEnum.Air;
         
         if (yPos == terrainHeight)
-            voxelValue =  BlockTypeEnum.Grass;
+            voxelValue = biome.surfaceBlock;
         else if (yPos < terrainHeight && yPos > terrainHeight - 4)
-            return BlockTypeEnum.Dirt;
+            voxelValue = biome.subSurfaceBlock;
         else if (yPos > terrainHeight)
             return BlockTypeEnum.Air;
         else
@@ -285,7 +311,7 @@ public class MinecraftTerrain : MonoBehaviour
         // Mine PerlinNoise
         if (voxelValue == BlockTypeEnum.Stone)
         {
-            foreach (Load lode in hillsBiome.loads)
+            foreach (Load lode in biome.loads)
             {
                 if (yPos > lode.minHeight && yPos < lode.maxHeight)
                     if (CustomNoise.Get3DPerlin(pos, lode.noiseOffset, lode.scale, lode.threshold))
@@ -296,12 +322,12 @@ public class MinecraftTerrain : MonoBehaviour
         //tree PerlinNoise
         if (yPos == terrainHeight)
         {
-            if (CustomNoise.Get2DPerlin(new Vector2(pos.x, pos.z), 0, hillsBiome.treeZoneScale) >
-                hillsBiome.treeZoneThreshold)
+            if (CustomNoise.Get2DPerlin(new Vector2(pos.x, pos.z), 0, biome.treeZoneScale) >
+                biome.treeZoneThreshold)
             {
-                if (CustomNoise.Get2DPerlin(new Vector2(pos.x, pos.z), 0, hillsBiome.treePlaceScale) >
-                    hillsBiome.treePlaceThreshold)
-                    _modifications.Enqueue(_natureStructure.MakeTree(pos, hillsBiome));
+                if (CustomNoise.Get2DPerlin(new Vector2(pos.x, pos.z), 0, biome.treePlaceScale) >
+                    biome.treePlaceThreshold)
+                    _modifications.Enqueue(_natureStructure.MakeTree(pos, biome));
             }
                 
         }

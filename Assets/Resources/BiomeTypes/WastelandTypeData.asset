@@ -10,17 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 252c6485eccf3674ab8a955eb23d5abd, type: 3}
-  m_Name: HillsTypeData
+  m_Name: WastelandTypeData
   m_EditorClassIdentifier: 
-  biomeName: Hills
-  solidGroundHeight: 42
-  terrainHeight: 42
-  terrainScale: 0.25
+  biomeName: Wasteland
+  offset: 1234
+  scale: 0.042
+  temperature: 0.7
+  terrainHeight: 22
+  terrainScale: 0.15
+  surfaceBlock: 2
+  subSurfaceBlock: 2
+  treeChoice: 1
+  wood: 12
   treeZoneScale: 1.3
   treeZoneThreshold: 0.6
   treePlaceScale: 15
   treePlaceThreshold: 0.8
-  maxTrunkHeight: 10
+  placeMajor: 1
+  maxTrunkHeight: 12
   minTrunkHeight: 5
   trunkScale: 3
   trunkOffest: 0

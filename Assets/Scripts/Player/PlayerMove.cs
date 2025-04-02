@@ -71,7 +71,7 @@ public class PlayerMove : MonoBehaviour
     
     private void GravitySet()
     {
-        if (Input.GetKeyDown(KeyCode.F1))
+        if (Input.GetKeyDown(KeyCode.F2))
         {
             if (_isGravity == false)
             {

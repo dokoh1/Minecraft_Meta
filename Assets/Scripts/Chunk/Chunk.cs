@@ -5,8 +5,10 @@ using UnityEngine.Animations;
 
 public class Chunk
 {
-    public Queue<VoxelCondition> Modifications = new();
+    // public Queue<VoxelCondition> Modifications = new();
+    public readonly List<VoxelCondition> Modifications = new(100);
     public Vector3 Position;
+    Queue<Vector3Int> litBlocks = new Queue<Vector3Int>();
     
     public Coord _coord;
     private BlockData _blockData;
@@ -19,13 +21,13 @@ public class Chunk
     
     
     private readonly BlockState[,,] _blockNames = new BlockState[VoxelData.ChunkWidth, VoxelData.ChunkHeight, VoxelData.ChunkDepth];
-    private readonly List<Vector3> _vertices = new();
-    private readonly List<int> _indices = new();
-    private readonly List<Vector2> _uvs = new();
-    private readonly List<int> _transparentIndices = new();
-    private readonly List<int> _leaveIndices = new();
-    private readonly List<Color> _colors = new();
-    private readonly List<Vector3> _normals = new();
+    private readonly List<Vector3> _vertices = new(10000);
+    private readonly List<int> _indices = new(10000);
+    private readonly List<Vector2> _uvs = new(10000);
+    private readonly List<int> _transparentIndices = new(10000);
+    private readonly List<int> _leaveIndices = new(10000);
+    private readonly List<Color> _colors = new(10000);
+    private readonly List<Vector3> _normals = new(10000);
     private Material[] _materials = new Material[3];
 
     private int _vertexIndex = 0;
@@ -88,7 +90,7 @@ public class Chunk
     
     private void ThreadChunkTypeSetting()
     {
-
+        Vector3 pos = Vector3.zero;
         for (int y = 0; y < VoxelData.ChunkHeight; y++)
         {
             for (int x = 0; x < VoxelData.ChunkWidth; x++)
@@ -96,7 +98,8 @@ public class Chunk
                 for (int z = 0; z < VoxelData.ChunkDepth; z++)
                 {
                     //청크의 내부 좌표가 아닌 월드 좌표를 구하기 위해서 더해준다.
-                    _blockNames[x, y, z] = new BlockState(_terrain.TerrainCondition(new Vector3(x, y, z) + Position));
+                    pos.Set(x, y, z);
+                    _blockNames[x, y, z] = new BlockState(_terrain.TerrainCondition(pos + Position));
                 }
             }
         }
@@ -112,13 +115,15 @@ public class Chunk
     {
         while (Modifications.Count > 0)
         {
-            VoxelCondition voxelCondition = Modifications.Dequeue();
+            VoxelCondition voxelCondition = Modifications[0];
+            Modifications.RemoveAt(0);
+            
             Vector3 pos = voxelCondition.Position -= Position;
             _blockNames[(int)pos.x, (int)pos.y, (int)pos.z].BlockType = voxelCondition.BlockType;
         }
         ClearChunk();
         CalculateLight();
-
+        Vector3 updatePos = new Vector3(0, 0, 0);
         for (int y = 0; y < VoxelData.ChunkHeight; y++)
         {
             for (int x = 0; x < VoxelData.ChunkWidth; x++)
@@ -126,7 +131,10 @@ public class Chunk
                 for (int z = 0; z < VoxelData.ChunkDepth; z++)
                 {
                     if (_blockData.BlockTypeDictionary[_blockNames[x, y, z].BlockType].isSolid)
-                        UpdateMeshData(new Vector3(x, y, z));
+                    {
+                        updatePos.Set(x, y, z);
+                        UpdateMeshData(updatePos);
+                    }
                 }
             }
         }
@@ -278,8 +286,8 @@ public class Chunk
 
     void CalculateLight()
     {
-        Queue<Vector3Int> litBlocks = new Queue<Vector3Int>();
-        
+        litBlocks.Clear();
+        Vector3Int lightPos = new Vector3Int();
         for (int x = 0; x < VoxelData.ChunkWidth; x++)
         {
             for (int z = 0; z < VoxelData.ChunkDepth; z++)
@@ -296,7 +304,10 @@ public class Chunk
                     thisBlock.GlobalLightPercent = lightRay;
                     _blockNames[x, y, z] = thisBlock;
                     if (lightRay > VoxelData.lightFalloff)
-                        litBlocks.Enqueue(new Vector3Int(x, y, z));
+                    {
+                        lightPos.Set(x, y ,z);
+                        litBlocks.Enqueue(lightPos);
+                    }
                 }
             }
         }
@@ -309,6 +320,7 @@ public class Chunk
             {
                 Vector3 currentBlock = block + VoxelData.FaceChecks[i];
                 Vector3Int neighbor = new Vector3Int((int)currentBlock.x, (int)currentBlock.y, (int)currentBlock.z);
+                
                 if (IsVoxelInChunk(neighbor.x, neighbor.y, neighbor.z))
                 {
                     if (_blockNames[neighbor.x, neighbor.y, neighbor.z].GlobalLightPercent <
@@ -331,16 +343,16 @@ public class Chunk
     public void CreateMesh()
     {
         Mesh mesh = new();
-        mesh.vertices = _vertices.ToArray();
+        mesh.SetVertices(_vertices);
         mesh.subMeshCount = 3;
         
         mesh.SetTriangles(_indices.ToArray(), 0);
         mesh.SetTriangles(_transparentIndices.ToArray(), 1);
         mesh.SetTriangles(_leaveIndices.ToArray(), 2);
         
-        mesh.uv = _uvs.ToArray();
-        mesh.colors = _colors.ToArray();
-        mesh.normals = _normals.ToArray();
+        mesh.SetUVs(0, _uvs);
+        mesh.SetColors(_colors);
+        mesh.SetNormals(_normals);
         _meshFilter.mesh = mesh;    
         _meshColider.sharedMesh = _meshFilter.mesh;
         
@@ -352,6 +364,8 @@ public class Chunk
     /// <param name="textureID"></param>
     private void AddTexture(int textureID, bool isLeave)
     {
+        Vector2 uv0 = new Vector2(0, 0);
+        
         if (!isLeave)
         {
             float y = textureID / VoxelData.TextureAtlasSize;
@@ -360,18 +374,26 @@ public class Chunk
             x *= VoxelData.NormalizedBlockTextureSize;
             y *= VoxelData.NormalizedBlockTextureSize;
             y = 1f - y - VoxelData.NormalizedBlockTextureSize;
-
-            _uvs.Add(new Vector2(x, y));
-            _uvs.Add(new Vector2(x, y + VoxelData.NormalizedBlockTextureSize));
-            _uvs.Add(new Vector2(x + VoxelData.NormalizedBlockTextureSize, y));
-            _uvs.Add(new Vector2(x + VoxelData.NormalizedBlockTextureSize, y + VoxelData.NormalizedBlockTextureSize));
+            
+            uv0.Set(x, y);
+            _uvs.Add(uv0);
+            uv0.Set(x, y + VoxelData.NormalizedBlockTextureSize);
+            _uvs.Add(uv0);
+            uv0.Set(x + VoxelData.NormalizedBlockTextureSize, y);
+            _uvs.Add(uv0);
+            uv0.Set(x + VoxelData.NormalizedBlockTextureSize, y + VoxelData.NormalizedBlockTextureSize);
+            _uvs.Add(uv0);
         }
         else if (isLeave)
         {
-            _uvs.Add(new Vector2(0, 0));
-            _uvs.Add(new Vector2(0, 1));
-            _uvs.Add(new Vector2(1, 0));
-            _uvs.Add(new Vector2(1, 1));
+            uv0.Set(0, 0);
+            _uvs.Add(uv0);
+            uv0.Set(0, 1);
+            _uvs.Add(uv0);
+            uv0.Set(1, 0);
+            _uvs.Add(uv0);
+            uv0.Set(1, 1);
+            _uvs.Add(uv0);
         }
     }
     bool IsVoxelInChunk(int x, int y, int z)
