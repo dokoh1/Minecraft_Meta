@@ -15,7 +15,7 @@ MonoBehaviour:
   isSolid: 1
   isDrawing: 0
   isLeave: 0
-  transparency: 0
+  opacity: 15
   blockName: Snow
   backFaceTexture: 68
   frontFaceTexture: 68

@@ -6,13 +6,9 @@ using UnityEngine.Animations;
 public class Chunk
 {
     // public Queue<VoxelCondition> Modifications = new();
-    public readonly List<VoxelCondition> Modifications = new(100);
     public Vector3 Position;
-    Queue<Vector3Int> litBlocks = new Queue<Vector3Int>();
     
     public Coord _coord;
-    private BlockData _blockData;
-    private MinecraftTerrain _terrain;
     private GameObject _chunkObject;
     
     private MeshRenderer _renderer;
@@ -20,23 +16,22 @@ public class Chunk
     private MeshCollider _meshColider;
     
     
-    private readonly BlockState[,,] _blockNames = new BlockState[VoxelData.ChunkWidth, VoxelData.ChunkHeight, VoxelData.ChunkDepth];
-    private readonly List<Vector3> _vertices = new(10000);
-    private readonly List<int> _indices = new(10000);
-    private readonly List<Vector2> _uvs = new(10000);
-    private readonly List<int> _transparentIndices = new(10000);
-    private readonly List<int> _leaveIndices = new(10000);
-    private readonly List<Color> _colors = new(10000);
-    private readonly List<Vector3> _normals = new(10000);
+    private readonly List<Vector3> _vertices = new();
+    private readonly List<int> _indices = new();
+    private readonly List<Vector2> _uvs = new();
+    private readonly List<int> _transparentIndices = new();
+    private readonly List<int> _leaveIndices = new();
+    private readonly List<Color> _colors = new();
+    private readonly List<Vector3> _normals = new();
     private Material[] _materials = new Material[3];
 
     private int _vertexIndex = 0;
+    ChunkData chunkData;
     
     //Chunk Acitve Bool
     private bool _isActive;
     
     //청크가 아직 초기화 중이거나, 다른 연산이 진행 중인지 파악하는 bool
-    private bool _isBlockNamePopulated = false;
     public bool IsActive
     {
         get
@@ -51,109 +46,77 @@ public class Chunk
         }
     }
     
-    public bool IsEdit
-    {
-        get
-        {
-            if (!_isBlockNamePopulated)
-                return false;
-            else
-                return true;
-        }
-    }
     
-    public Chunk(Coord coord, BlockData blockData, MinecraftTerrain terrain)
+    public Chunk(Coord coord)
     {
         _coord = coord;
-        _blockData = blockData;
-        _terrain = terrain;
-    }
-    
-    public void Init()
-    {
+
         _chunkObject = new GameObject();
         _meshFilter = _chunkObject.AddComponent<MeshFilter>();
         _renderer = _chunkObject.AddComponent<MeshRenderer>();
         _meshColider = _chunkObject.AddComponent<MeshCollider>();
 
-        _materials[0] = _blockData.material;
-        _materials[1] = _blockData.transparentMaterial;
-        _materials[2] = _blockData.leaveMaterial;
+        _materials[0] = MinecraftTerrain.Instance.blockData.material;
+        _materials[1] = MinecraftTerrain.Instance.blockData.transparentMaterial;
+        _materials[2] = MinecraftTerrain.Instance.blockData.leaveMaterial;
         _renderer.materials = _materials;
         
-        _chunkObject.transform.SetParent(_terrain.transform);
+        _chunkObject.transform.SetParent(MinecraftTerrain.Instance.transform);
         _chunkObject.transform.position = new Vector3(_coord.X * VoxelData.ChunkWidth, 0f, _coord.Z * VoxelData.ChunkDepth);
         
         Position = _chunkObject.transform.position;
-        ThreadChunkTypeSetting();
-    }
-    
-    private void ThreadChunkTypeSetting()
-    {
-        Vector3 pos = Vector3.zero;
-        for (int y = 0; y < VoxelData.ChunkHeight; y++)
-        {
-            for (int x = 0; x < VoxelData.ChunkWidth; x++)
-            {
-                for (int z = 0; z < VoxelData.ChunkDepth; z++)
-                {
-                    //청크의 내부 좌표가 아닌 월드 좌표를 구하기 위해서 더해준다.
-                    pos.Set(x, y, z);
-                    _blockNames[x, y, z] = new BlockState(_terrain.TerrainCondition(pos + Position));
-                }
-            }
-        }
-
-        _isBlockNamePopulated = true;
-        lock (_terrain.ChunkUpdateLock)
-        {
-            _terrain._chunksToUpdate.Add(this);
-        }
+        chunkData = MinecraftTerrain.Instance.worldData.RequestChunk(new Vector2Int((int)Position.x, (int)Position.z),
+            true);
+        lock (MinecraftTerrain.Instance.ChunkUpdateLock)
+            MinecraftTerrain.Instance._chunksToUpdate.Add(this);
     }
 
     public void UpdateChunk()
     {
-        while (Modifications.Count > 0)
-        {
-            VoxelCondition voxelCondition = Modifications[0];
-            Modifications.RemoveAt(0);
-            
-            Vector3 pos = voxelCondition.Position -= Position;
-            _blockNames[(int)pos.x, (int)pos.y, (int)pos.z].BlockType = voxelCondition.BlockType;
-        }
         ClearChunk();
-        CalculateLight();
-        Vector3 updatePos = new Vector3(0, 0, 0);
+
         for (int y = 0; y < VoxelData.ChunkHeight; y++)
         {
             for (int x = 0; x < VoxelData.ChunkWidth; x++)
             {
                 for (int z = 0; z < VoxelData.ChunkDepth; z++)
                 {
-                    if (_blockData.BlockTypeDictionary[_blockNames[x, y, z].BlockType].isSolid)
+                    if (MinecraftTerrain.Instance.blockData.BlockTypeDictionary[chunkData.Map[x, y, z].BlockType].isSolid)
                     {
-                        updatePos.Set(x, y, z);
-                        UpdateMeshData(updatePos);
+                        UpdateMeshData(new Vector3(x, y, z));
                     }
                 }
             }
         }
-        _terrain.ChunksQueue.Enqueue(this);
+        MinecraftTerrain.Instance.ChunksQueue.Enqueue(this);
     }
+    
+    public void ClearChunk()
+    {
+        _vertexIndex = 0;
+        _vertices.Clear();
+        _indices.Clear();
+        _uvs.Clear();
+        _transparentIndices.Clear();
+        _leaveIndices.Clear();
+        _colors.Clear();
+        _normals.Clear();
+    }
+    
     private void UpdateMeshData(Vector3 pos)
     {
         int x = Mathf.FloorToInt(pos.x);
         int y = Mathf.FloorToInt(pos.y);
         int z = Mathf.FloorToInt(pos.z);
         
-        BlockTypeEnum blockKey = _blockNames[x, y, z].BlockType;
-        bool isTransparent = _terrain.blockData.BlockTypeDictionary[blockKey].isDrawing;
-        bool isLeave = _terrain.blockData.BlockTypeDictionary[blockKey].isLeave;
+        BlockTypeEnum blockKey = chunkData.Map[x, y, z].BlockType;
+        bool isTransparent = MinecraftTerrain.Instance.blockData.BlockTypeDictionary[blockKey].isDrawing;
+        bool isLeave = MinecraftTerrain.Instance.blockData.BlockTypeDictionary[blockKey].isLeave;
         
         for (int i = 0; i < 6; i++)
         {
             BlockState neighbor = IsCheckVoxel(pos + VoxelData.FaceChecks[i]);
-            if (neighbor != null && _blockData.BlockTypeDictionary[neighbor.BlockType].isDrawing)
+            if (neighbor != null && MinecraftTerrain.Instance.blockData.BlockTypeDictionary[neighbor.BlockType].isDrawing)
             {
                 _vertices.Add(pos + VoxelData.VoxelVertes[VoxelData.VoxelIndex[i, 0]]);
                 _vertices.Add(pos + VoxelData.VoxelVertes[VoxelData.VoxelIndex[i, 1]]);
@@ -163,7 +126,7 @@ public class Chunk
                 {
                     _normals.Add(VoxelData.FaceChecks[i]);
                 }
-                AddTexture(_blockData.BlockTypeDictionary[blockKey].GetTextureID(i), isLeave);
+                AddTexture(MinecraftTerrain.Instance.blockData.BlockTypeDictionary[blockKey].GetTextureID(i), isLeave);
                 float lightLevel = neighbor.GlobalLightPercent;
                 
                 _colors.Add(new Color(0, 0, 0, lightLevel));
@@ -202,16 +165,16 @@ public class Chunk
         }
     }
 
-    
+
+
     private void UpdateAroundChunk(int x, int y, int z)
     {
         Vector3 thisVoxel = new Vector3(x, y, z);
         for (int i = 0; i < 6; i++)
         {
             Vector3 checkVoxel = thisVoxel + VoxelData.FaceChecks[i];
-
             if (!IsVoxelInChunk((int)checkVoxel.x, (int)checkVoxel.y, (int)checkVoxel.z))
-                _terrain._chunksToUpdate.Insert(0, _terrain.Vector3ToChunk(checkVoxel + Position));
+                MinecraftTerrain.Instance._chunksToUpdate.Insert(0, MinecraftTerrain.Instance.Vector3ToChunk(checkVoxel + Position));
         }
     }
     
@@ -224,11 +187,13 @@ public class Chunk
         xCheck -= Mathf.FloorToInt(_chunkObject.transform.position.x);
         zCheck -= Mathf.FloorToInt(_chunkObject.transform.position.z);
         
-        _blockNames[xCheck, yCheck, zCheck].BlockType = blockType;
+        chunkData.Map[xCheck, yCheck, zCheck].BlockType = blockType;
+        
+        MinecraftTerrain.Instance.worldData.AddToModifiedChunks(chunkData);
 
-        lock (_terrain.ChunkUpdateLock)
+        lock (MinecraftTerrain.Instance.ChunkUpdateLock)
         {
-            _terrain._chunksToUpdate.Insert(0, this);
+            MinecraftTerrain.Instance._chunksToUpdate.Insert(0, this);
             UpdateAroundChunk(xCheck, yCheck, zCheck);
             
         }
@@ -237,18 +202,6 @@ public class Chunk
 
 
 
-    public void ClearChunk()
-    {
-        _vertexIndex = 0;
-        _vertices.Clear();
-        _indices.Clear();
-        _uvs.Clear();
-        _transparentIndices.Clear();
-        _leaveIndices.Clear();
-        _colors.Clear();
-        _normals.Clear();
-    }
-    
 
     /// <summary>
     /// Voxel이 생성되어야할지 말아야할지 판단하는 함수
@@ -262,9 +215,9 @@ public class Chunk
         int z = Mathf.FloorToInt(pos.z);
 
         if (!IsVoxelInChunk(x, y, z))
-            return _terrain.GetBlockState(pos + Position);
+            return MinecraftTerrain.Instance.GetBlockState(pos + Position);
         
-        return _blockNames[x, y, z];
+        return chunkData.Map[x, y, z];
     }
 
 
@@ -276,70 +229,10 @@ public class Chunk
         
         xCheck -= Mathf.FloorToInt(Position.x);
         zCheck -= Mathf.FloorToInt(Position.z);
-        return _blockNames[xCheck, yCheck, zCheck];
+        return chunkData.Map[xCheck, yCheck, zCheck];
     }
     
-    /// <summary>
-    /// Voxel의 Vertex 정보 및 index정보 및 uv 정보를 넣는다.
-    /// </summary>
-    /// <param name="pos"></param>
 
-    void CalculateLight()
-    {
-        litBlocks.Clear();
-        Vector3Int lightPos = new Vector3Int();
-        for (int x = 0; x < VoxelData.ChunkWidth; x++)
-        {
-            for (int z = 0; z < VoxelData.ChunkDepth; z++)
-            {
-                float lightRay = 1f;
-                for (int y = VoxelData.ChunkHeight - 1; y >= 0; y--)
-                {
-                    BlockState thisBlock = _blockNames[x, y, z];
-
-                    if (thisBlock.BlockType != BlockTypeEnum.Air && _blockData.BlockTypeDictionary[thisBlock.BlockType].transparency < lightRay)
-                    {
-                        lightRay = _blockData.BlockTypeDictionary[thisBlock.BlockType].transparency;
-                    }
-                    thisBlock.GlobalLightPercent = lightRay;
-                    _blockNames[x, y, z] = thisBlock;
-                    if (lightRay > VoxelData.lightFalloff)
-                    {
-                        lightPos.Set(x, y ,z);
-                        litBlocks.Enqueue(lightPos);
-                    }
-                }
-            }
-        }
-        
-        while (litBlocks.Count > 0)
-        {
-            Vector3Int block = litBlocks.Dequeue();
-            
-            for (int i = 0; i < 6; i++)
-            {
-                Vector3 currentBlock = block + VoxelData.FaceChecks[i];
-                Vector3Int neighbor = new Vector3Int((int)currentBlock.x, (int)currentBlock.y, (int)currentBlock.z);
-                
-                if (IsVoxelInChunk(neighbor.x, neighbor.y, neighbor.z))
-                {
-                    if (_blockNames[neighbor.x, neighbor.y, neighbor.z].GlobalLightPercent <
-                        _blockNames[block.x, block.y, block.z].GlobalLightPercent - VoxelData.lightFalloff)
-                    {
-                        _blockNames[neighbor.x, neighbor.y, neighbor.z].GlobalLightPercent =
-                            _blockNames[block.x, block.y, block.z].GlobalLightPercent - VoxelData.lightFalloff;
-                        if (_blockNames[neighbor.x, neighbor.y, neighbor.z].GlobalLightPercent > VoxelData.lightFalloff)
-                            litBlocks.Enqueue(neighbor);
-                    }
-                }
-            }
-        }
-    
-    }
-
-    /// <summary>
-    /// Vertex, uv, Index 정보를 Mesh에 넣는다.
-    /// </summary>
     public void CreateMesh()
     {
         Mesh mesh = new();

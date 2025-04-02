@@ -21,7 +21,6 @@ public class Clouds : MonoBehaviour
     private void Start()
     {
         cloudTextureWidth =  cloudTexture.width;
-        Debug.Log("CloudTextureWidth" + cloudTextureWidth);
         cloudTileSize = VoxelData.ChunkWidth;
         offset = new Vector3Int( - (cloudTextureWidth / 2), 0, - (cloudTextureWidth / 2));
         
