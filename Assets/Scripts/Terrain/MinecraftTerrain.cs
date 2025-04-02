@@ -28,6 +28,8 @@ public class MinecraftTerrain : MonoBehaviour
     
     public Coord PlayerCoord;
     private Camera _mainCamera;
+
+    public Clouds _clouds;
     
     //캐릭터 spawn 포지션
     private Vector3 _spawnPosition;
@@ -78,9 +80,9 @@ public class MinecraftTerrain : MonoBehaviour
             ChunkUpdateThread.Start();
         }
         _spawnPosition = new Vector3
-            ((VoxelData.TerrainSize * VoxelData.ChunkWidth) / 2, 
+            (VoxelData.TerrainMiddle, 
             VoxelData.ChunkHeight - 190,
-            (VoxelData.TerrainSize * VoxelData.ChunkDepth) / 2);
+            VoxelData.TerrainMiddle);
         
         GenerateWorld();
         _playerPreviousCoord = Vector3ToCoord(player.position);
@@ -213,6 +215,7 @@ public class MinecraftTerrain : MonoBehaviour
     
     private void GenerateChunkAroundPlayer()
     {
+        _clouds.UpdateCloud();
         Coord playerPos = Vector3ToCoord(player.transform.position);
         _playerPreviousCoord = PlayerCoord;
         PlayerCoord = Vector3ToCoord(player.transform.position);

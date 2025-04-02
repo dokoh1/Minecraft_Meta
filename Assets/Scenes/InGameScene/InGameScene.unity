@@ -512,7 +512,7 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.3
+  near clip plane: 0.1
   far clip plane: 1000
   field of view: 60.000004
   orthographic: 0
@@ -632,6 +632,7 @@ MonoBehaviour:
   globalLight: 0.95
   Day: {r: 0.5294118, g: 0.80784315, b: 0.92156863, a: 0}
   Night: {r: 0.09803922, g: 0.09803922, b: 0.4392157, a: 0}
+  _clouds: {fileID: 1628425428}
 --- !u!4 &507072878
 Transform:
   m_ObjectHideFlags: 0
@@ -1214,6 +1215,54 @@ Transform:
   - {fileID: 796804301}
   m_Father: {fileID: 960254517}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1628425425
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1628425429}
+  - component: {fileID: 1628425428}
+  m_Layer: 0
+  m_Name: Clouds
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1628425428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1628425425}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f25c16f64efe21144ac9111695fe3a53, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cloudHeight: 115
+  cloudTexture: {fileID: 2800000, guid: a2de86f90bafdac48b0c9f4fc7c79c92, type: 3}
+  cloudMaterial: {fileID: 2100000, guid: f34ea06ba03f22c46bc8dcfe0be3145f, type: 2}
+  _terrain: {fileID: 507072877}
+--- !u!4 &1628425429
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1628425425}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1752504611
 GameObject:
   m_ObjectHideFlags: 0
@@ -1513,3 +1562,4 @@ SceneRoots:
   - {fileID: 1011647880}
   - {fileID: 960254517}
   - {fileID: 960496850}
+  - {fileID: 1628425429}
