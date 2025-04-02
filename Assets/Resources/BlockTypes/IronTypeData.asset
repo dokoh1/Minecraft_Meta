@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: IronTypeData
   m_EditorClassIdentifier: 
   isSolid: 1
-  isTransparent: 0
+  isDrawing: 0
   isLeave: 0
+  opacity: 15
   blockName: Iron
   backFaceTexture: 33
   frontFaceTexture: 33

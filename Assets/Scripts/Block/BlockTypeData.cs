@@ -7,7 +7,7 @@ public class BlockTypeData : ScriptableObject
     public bool isSolid;
     public bool isDrawing;
     public bool isLeave;
-    public float transparency;
+    public byte opacity;
     public string blockName;
     public int backFaceTexture;
     public int frontFaceTexture;

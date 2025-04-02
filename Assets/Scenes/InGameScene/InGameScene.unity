@@ -621,9 +621,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   setting:
-    ViewDistance: 0
-    enabledThread: 0
-    mouseSensitivity: 0.1
+    ViewDistance: 4
+    loadDistance: 8
+    enabledThread: 1
+    mouseSensitivity: 2
     seed: 0
   blockData: {fileID: 601979238}
   biomeData: {fileID: 556205493}
@@ -633,6 +634,10 @@ MonoBehaviour:
   Day: {r: 0.5294118, g: 0.80784315, b: 0.92156863, a: 0}
   Night: {r: 0.09803922, g: 0.09803922, b: 0.4392157, a: 0}
   _clouds: {fileID: 1628425428}
+  worldData:
+    worldName: Prototype
+    seed: 0
+  appPath: 
 --- !u!4 &507072878
 Transform:
   m_ObjectHideFlags: 0
