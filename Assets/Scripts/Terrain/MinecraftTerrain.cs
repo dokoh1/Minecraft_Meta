@@ -16,7 +16,6 @@ public class MinecraftTerrain : MonoBehaviour
     public BiomeData biomeData;
     public Transform player;
     public GameObject debugUI;
-
     
     [Range(0f, 1f)]
     public float globalLight;
