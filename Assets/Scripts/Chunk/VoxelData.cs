@@ -18,8 +18,12 @@ public static class VoxelData
     {
         get { return TerrainSize * ChunkWidth; }
     }
-    
 
+    public static int TerrainMiddle
+    {
+        get { return (TerrainSize * ChunkWidth / 2); }
+    }
+    
     public static float NormalizedBlockTextureSize
     {
         get {return 1f / TextureAtlasSize; }
