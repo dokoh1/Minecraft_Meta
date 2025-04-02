@@ -103,7 +103,7 @@ public class ToolbarSlotManager : MonoBehaviour, IDropHandler
         {
             Destroy(child.gameObject);
         }
-
+        
         _itemDisplay = Instantiate(itemDisplayPrefab, transform);
         _itemDisplay.GetComponent<Image>().sprite = sprite;
         _itemDisplay.transform.localPosition = Vector3.zero;
