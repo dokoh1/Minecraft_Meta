@@ -7,7 +7,6 @@ public class InventoryShow2 : MonoBehaviour
 {
    //target이라는 변수를 통해 Canvas에 상속되어 있는 자식의 모든 컴포넌트에 접근할 수 있도록 한다. 
    public GameObject target;
-   
    private void Awake()
    {
       target.SetActive(false);
