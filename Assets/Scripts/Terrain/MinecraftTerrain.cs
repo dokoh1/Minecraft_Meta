@@ -46,6 +46,7 @@ public class MinecraftTerrain : MonoBehaviour
     private List<Coord> _activeChunks = new();
     private List<Coord> _previousActiveChunk;
     private Coord _playerPreviousCoord;
+    public float cycleDuration = 600f;
     
     
     //멀티 쓰레드 방지용 flag
@@ -113,6 +114,8 @@ public class MinecraftTerrain : MonoBehaviour
     
     private void Update()
     {
+        float time = Time.time / cycleDuration * Mathf.PI * 2f;
+        globalLight = Mathf.Clamp01((Mathf.Sin(time) + 1f) / 2f);
         Shader.SetGlobalFloat(GlobalLight, globalLight);
         _mainCamera.backgroundColor = Color.Lerp(Night, Day, globalLight);
         Random.InitState(VoxelData.seed);

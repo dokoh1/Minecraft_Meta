@@ -69,11 +69,59 @@ public class Chunk
         lock (MinecraftTerrain.Instance.ChunkUpdateLock)
             MinecraftTerrain.Instance._chunksToUpdate.Add(this);
     }
+    void CalculateLight()
+    {
+        Queue<Vector3Int> litBlocks = new Queue<Vector3Int>();
+        
+        for (int x = 0; x < VoxelData.ChunkWidth; x++)
+        {
+            for (int z = 0; z < VoxelData.ChunkDepth; z++)
+            {
+                float lightRay = 1f;
+                for (int y = VoxelData.ChunkHeight - 1; y >= 0; y--)
+                {
+                    BlockState thisBlock = chunkData.Map[x, y, z];
 
+                    if (thisBlock.BlockType != BlockTypeEnum.Air && MinecraftTerrain.Instance.blockData.BlockTypeDictionary[thisBlock.BlockType].transparency < lightRay)
+                    {
+                        lightRay = MinecraftTerrain.Instance.blockData.BlockTypeDictionary[thisBlock.BlockType].transparency;
+                    }
+                    thisBlock.GlobalLightPercent = lightRay;
+                    chunkData.Map[x, y, z] = thisBlock;
+                    if (lightRay > VoxelData.lightFalloff)
+                        litBlocks.Enqueue(new Vector3Int(x, y, z));
+                }
+            }
+        }
+        
+        while (litBlocks.Count > 0)
+        {
+            Vector3Int block = litBlocks.Dequeue();
+            
+            for (int i = 0; i < 6; i++)
+            {
+                Vector3 currentBlock = block + VoxelData.FaceChecks[i];
+                Vector3Int neighbor = new Vector3Int((int)currentBlock.x, (int)currentBlock.y, (int)currentBlock.z);
+                if (IsVoxelInChunk(neighbor.x, neighbor.y, neighbor.z))
+                {
+                    if (chunkData.Map[neighbor.x, neighbor.y, neighbor.z].GlobalLightPercent <
+                        chunkData.Map[block.x, block.y, block.z].GlobalLightPercent - VoxelData.lightFalloff)
+                    {
+                        chunkData.Map[neighbor.x, neighbor.y, neighbor.z].GlobalLightPercent =
+                            chunkData.Map[block.x, block.y, block.z].GlobalLightPercent - VoxelData.lightFalloff;
+                        if (chunkData.Map[neighbor.x, neighbor.y, neighbor.z].GlobalLightPercent > VoxelData.lightFalloff)
+                            litBlocks.Enqueue(neighbor);
+                    }
+                }
+            }
+        }
+    
+    }
+    
     public void UpdateChunk()
     {
         ClearChunk();
-
+        CalculateLight();
         for (int y = 0; y < VoxelData.ChunkHeight; y++)
         {
             for (int x = 0; x < VoxelData.ChunkWidth; x++)
@@ -235,16 +283,16 @@ public class Chunk
     public void CreateMesh()
     {
         Mesh mesh = new();
-        mesh.SetVertices(_vertices);
+        mesh.vertices = _vertices.ToArray();
         mesh.subMeshCount = 3;
         
         mesh.SetTriangles(_indices.ToArray(), 0);
         mesh.SetTriangles(_transparentIndices.ToArray(), 1);
         mesh.SetTriangles(_leaveIndices.ToArray(), 2);
         
-        mesh.SetUVs(0, _uvs);
-        mesh.SetColors(_colors);
-        mesh.SetNormals(_normals);
+        mesh.uv = _uvs.ToArray();
+        mesh.colors = _colors.ToArray();
+        mesh.normals = _normals.ToArray();
         _meshFilter.mesh = mesh;    
         _meshColider.sharedMesh = _meshFilter.mesh;
         

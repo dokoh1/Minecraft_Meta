@@ -7,6 +7,8 @@ public class InventoryShow2 : MonoBehaviour
 {
    //target이라는 변수를 통해 Canvas에 상속되어 있는 자식의 모든 컴포넌트에 접근할 수 있도록 한다. 
    public GameObject target;
+   private bool _mouseLockHide = true;
+   public PlayerMove player;
    private void Awake()
    {
       target.SetActive(false);
@@ -21,7 +23,20 @@ public class InventoryShow2 : MonoBehaviour
    {
       if (Input.GetKeyDown(KeyCode.I))
       {
-         target.SetActive(!target.activeSelf);
+         if (target.activeSelf)
+         {
+            if (!player._mouseLockHide)
+               player._mouseLockHide = true;
+            target.SetActive(false);
+            player.PasueLock = false;
+         }
+         else if (target.activeSelf == false && player._inventoryLock)
+         {
+            if (player._mouseLockHide)
+                  player._mouseLockHide = false;
+            target.SetActive(true);
+            player.PasueLock = true;
+         }
       }
    }
 }

@@ -15,7 +15,7 @@ MonoBehaviour:
   isSolid: 1
   isDrawing: 1
   isLeave: 1
-  opacity: 5
+  transparency: 0.5
   blockName: Leave
   backFaceTexture: 16
   frontFaceTexture: 16

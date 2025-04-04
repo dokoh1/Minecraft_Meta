@@ -12,7 +12,7 @@ public static class VoxelData
     //Light Value
     public static float minLight = 0.1f;
     public static float maxLight = 0.9f;
-    public static float lightFalloff = 0.3f;
+    public static float lightFalloff = 0.1f;
 
     public static int seed = 0;
     

@@ -15,7 +15,7 @@ MonoBehaviour:
   isSolid: 1
   isDrawing: 1
   isLeave: 0
-  transparency: 1
+  transparency: 0.8
   blockName: Glass
   backFaceTexture: 3
   frontFaceTexture: 3

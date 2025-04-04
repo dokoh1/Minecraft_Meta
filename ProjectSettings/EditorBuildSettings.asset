@@ -8,13 +8,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/UIScene/StartMenu.unity
     guid: 99c9720ab356a0642a771bea13969a05
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/UIScene/Inventory.unity
     guid: e4cbaa5bf00a12147b00d99c4175d363
   - enabled: 1
     path: Assets/Scenes/InGameScene/InGameScene.unity
     guid: a1edf62b062a2754d9d4195e2cf92df4
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/UIScene/StopMenu.unity
     guid: fabdc9624427f5e4caccb6137dc3eda3
   m_configObjects:

@@ -1,3 +1,4 @@
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 public class PlayerMove : MonoBehaviour
 {
@@ -5,7 +6,11 @@ public class PlayerMove : MonoBehaviour
     public GameObject blockEffect;
     public GameObject blockPlaceEffect;
     public BlockTypeEnum blockType;
+    public bool _inventoryLock = true;
+    public bool _mouseLockHide = true;
+    public bool PasueLock = true;
 
+    public ToolBarManager2 toolbarManager;
     private MinecraftTerrain _terrain;
     private Rigidbody _rigidbody;
     private Camera _mainCamera;
@@ -27,7 +32,6 @@ public class PlayerMove : MonoBehaviour
     private float _rotateX;
     private float _rotateY;
     private float _distance;
-    private bool _mouseLockHide = true;
     private bool _isGravity = false;
     private bool _isGround;
     
@@ -36,7 +40,7 @@ public class PlayerMove : MonoBehaviour
         _mainCamera = Camera.main;
         _rigidbody = gameObject.GetComponent<Rigidbody>();
         _terrain= GameObject.Find("Terrain").GetComponent<MinecraftTerrain>();
-        blockType = BlockTypeEnum.Stone;
+        blockType = BlockTypeEnum.Air;
         _rigidbody.freezeRotation = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -45,7 +49,7 @@ public class PlayerMove : MonoBehaviour
     
     private void Update()
     {
-        if (_mouseLockHide)
+        if (_mouseLockHide && _inventoryLock)
         {
             Rotate();
             JumpAndFly();
@@ -59,14 +63,7 @@ public class PlayerMove : MonoBehaviour
 
     private void BlockTypeSet()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-            blockType = BlockTypeEnum.Stone;
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-            blockType = BlockTypeEnum.Dirt;
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-            blockType = BlockTypeEnum.Glass;
-        else if (Input.GetKeyDown(KeyCode.Alpha4))
-            blockType = BlockTypeEnum.Grass;
+        blockType = toolbarManager.GetItemID();
     }
     
     private void GravitySet()
@@ -128,21 +125,17 @@ public class PlayerMove : MonoBehaviour
     
     private void SetCursorLock()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (!_mouseLockHide)
         {
-            if (_mouseLockHide)
-            {
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
-                _mouseLockHide = false;
-            }
-            else if (!_mouseLockHide)
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
-                _mouseLockHide = true;
-            }
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
         }
+        else if (_mouseLockHide)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
+            
     }
     
     private void FixedUpdate()
