@@ -24,6 +24,7 @@ public static class SaveSystem
         Thread thread = new Thread(() => SaveChunks(world));
         thread.Start();
     }
+    
     //변경 청크 데이터 저장
     public static void SaveChunks(WorldData world)
     {
@@ -38,6 +39,7 @@ public static class SaveSystem
         }
         
     }
+    
     //월드 데이터 로드
     public static WorldData LoadWorld(string worldName, int seed = 0)
     {
@@ -45,7 +47,7 @@ public static class SaveSystem
 
         if (File.Exists(loadPath + "world.world"))
         {
-            Debug.Log(worldName + " loaded from " + loadPath);
+            // Debug.Log(worldName + " loaded from " + loadPath);
             BinaryFormatter formatter = new BinaryFormatter();
             FileStream stream = new FileStream(loadPath + "world.world", FileMode.Open);
             
@@ -61,6 +63,7 @@ public static class SaveSystem
             return world;
         }
     }
+    
     //청크 저장
     public static void SaveChunk(ChunkData chunk, string worldName)
     {
@@ -76,6 +79,7 @@ public static class SaveSystem
         formatter.Serialize(stream, chunk);
         stream.Close();
     }
+    
     //청크 로드
     public static ChunkData LoadChunk(string worldName, Vector2Int position)
     {
@@ -91,7 +95,6 @@ public static class SaveSystem
             stream.Close();
             return chunkData;
         }
-
         return null;
     }
 }

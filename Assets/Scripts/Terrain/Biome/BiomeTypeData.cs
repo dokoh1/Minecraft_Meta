@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public enum biomeTreeChoice
+public enum BiomeTreeChoice
 {
     tree,
     Cacti,
@@ -28,7 +28,7 @@ public class BiomeTypeData : ScriptableObject
     public BlockTypeEnum subSurfaceBlock;
 
     [FormerlySerializedAs("TreeChoice")] [Header("Trees")] 
-    public biomeTreeChoice treeChoice;
+    public BiomeTreeChoice treeChoice;
     public BlockTypeEnum wood;
     
     public float treeZoneScale;
@@ -39,8 +39,6 @@ public class BiomeTypeData : ScriptableObject
     
     [Range(0.1f, 1f)]
     public float treePlaceThreshold;
-
-    public bool placeMajor = true;
 
     public int maxTrunkHeight;
     public int minTrunkHeight;

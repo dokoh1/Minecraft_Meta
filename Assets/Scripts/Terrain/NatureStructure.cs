@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class NatureStructure
 {
-    public Queue<VoxelCondition> MakeTree(Vector3 position, BiomeTypeData biometype)
+    public Queue<VoxelCondition> MakeTree(Vector3 position, BiomeTypeData biometype, CustomNoise noise)
     {
         Queue<VoxelCondition> queue = new();
         int height = (int)(biometype.maxTrunkHeight *
-                           CustomNoise.Get2DPerlin(new Vector2(position.x, position.z), biometype.trunkOffest, biometype.trunkScale));
+                           noise.Get2DPerlin(new Vector2(position.x, position.z), biometype.trunkOffest, biometype.trunkScale));
         if (height < biometype.minTrunkHeight)
             height = biometype.minTrunkHeight;
 
@@ -17,7 +17,7 @@ public class NatureStructure
             queue.Enqueue(new VoxelCondition(new Vector3(position.x, position.y + i, position.z), biometype.wood));
         }
         
-        if (biometype.treeChoice == biomeTreeChoice.Cacti)
+        if (biometype.treeChoice == BiomeTreeChoice.Cacti)
             return queue;
         
         for (int x = -2; x < 3; x++)

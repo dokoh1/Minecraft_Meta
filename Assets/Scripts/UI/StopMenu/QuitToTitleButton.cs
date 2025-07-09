@@ -6,9 +6,4 @@ public class QuitToTitleButton : MonoBehaviour
     {
         SceneManager.LoadScene("StartMenu");
     }
-
-    public void Start()
-    {
-        Debug.Log("Back to Title");
-    }
 }

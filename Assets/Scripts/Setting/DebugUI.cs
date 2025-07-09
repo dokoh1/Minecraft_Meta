@@ -38,6 +38,7 @@ public class DebugText : MonoBehaviour
         sb.AppendLine("");
         
         _text.text = sb.ToString();
+        
         if (_timer > 1f)
         {
             _frame = (int)(1f / Time.unscaledDeltaTime);

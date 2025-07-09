@@ -1,46 +1,39 @@
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
-public class PlayerMove : MonoBehaviour
+using UnityEngine.Serialization;
+
+public class PlayerController : MonoBehaviour
 {
     public GameObject player;
     public GameObject blockEffect;
     public GameObject blockPlaceEffect;
-    public BlockTypeEnum blockType;
-    public bool _inventoryLock = true;
-    public bool _mouseLockHide = true;
-    public bool PasueLock = true;
-
+    public PlayerData playerData;
     public ToolBarManager2 toolbarManager;
-    private MinecraftTerrain _terrain;
+    public MinecraftTerrain terrain;
+    
+    public bool inventoryLock = true;
+    public bool mouseLockHide = true;
+    public bool pasueLock = true;
+
+    
     private Rigidbody _rigidbody;
     private Camera _mainCamera;
+    private BlockTypeEnum _putBlockType;
     
     private Ray _ray;
     private RaycastHit _hit;
     
-    //정적 데이터
-    
-    private float _reach = 8f;
-    private float _walkSpeed = 3f;
-    private float _runSpeed = 6f;
-    private float _mouseSpeed = 3f;
-    private float _jumpForce = 10f;
-    private float _flyForce = 6f;
-    private float _playerHeight = 2f;
-    
-    //가변 데이터
     private float _rotateX;
     private float _rotateY;
     private float _distance;
-    private bool _isGravity = false;
+    private bool _isGravity;
     private bool _isGround;
     
     private void Start()
     {
         _mainCamera = Camera.main;
         _rigidbody = gameObject.GetComponent<Rigidbody>();
-        _terrain= GameObject.Find("Terrain").GetComponent<MinecraftTerrain>();
-        blockType = BlockTypeEnum.Air;
+        _putBlockType = BlockTypeEnum.Air;
         _rigidbody.freezeRotation = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -49,7 +42,7 @@ public class PlayerMove : MonoBehaviour
     
     private void Update()
     {
-        if (_mouseLockHide && _inventoryLock)
+        if (mouseLockHide && inventoryLock)
         {
             Rotate();
             JumpAndFly();
@@ -63,7 +56,7 @@ public class PlayerMove : MonoBehaviour
 
     private void BlockTypeSet()
     {
-        blockType = toolbarManager.GetItemID();
+        _putBlockType = toolbarManager.GetItemID();
     }
     
     private void GravitySet()
@@ -87,7 +80,7 @@ public class PlayerMove : MonoBehaviour
     {
         _ray = new Ray(_mainCamera.transform.position, _mainCamera.transform.forward);
         
-        if (Physics.Raycast(_ray, out _hit, _reach))
+        if (Physics.Raycast(_ray, out _hit, playerData.reach))
         {
             Vector3 hitPosition  = _hit.point;
             Vector3 hitNormal = _hit.normal;
@@ -116,21 +109,21 @@ public class PlayerMove : MonoBehaviour
         if (blockEffect.gameObject.activeSelf)
         {
             if (Input.GetMouseButtonDown(0))
-                _terrain.Vector3ToChunk(blockEffect.transform.position).EditBlockInChunk(blockEffect.transform.position, BlockTypeEnum.Air);
+                terrain.Vector3ToChunk(blockEffect.transform.position).EditBlockInChunk(blockEffect.transform.position, BlockTypeEnum.Air);
 
             if (Input.GetMouseButtonDown(1) && _distance > 1f)
-                _terrain.Vector3ToChunk(blockPlaceEffect.transform.position).EditBlockInChunk(blockPlaceEffect.transform.position, blockType);
+                terrain.Vector3ToChunk(blockPlaceEffect.transform.position).EditBlockInChunk(blockPlaceEffect.transform.position, _putBlockType);
         }
     }
     
     private void SetCursorLock()
     {
-        if (!_mouseLockHide)
+        if (!mouseLockHide)
         {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
-        else if (_mouseLockHide)
+        else if (mouseLockHide)
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
@@ -152,15 +145,15 @@ public class PlayerMove : MonoBehaviour
         if (h == 0 && v == 0)
             return;
         if (Input.GetKey(KeyCode.LeftShift))
-            _rigidbody.position += moveDir * (_runSpeed * Time.deltaTime); 
+            _rigidbody.position += moveDir * (playerData.runSpeed * Time.deltaTime); 
         else
-            _rigidbody.position += moveDir * (_walkSpeed * Time.deltaTime);
+            _rigidbody.position += moveDir * (playerData.walkSpeed * Time.deltaTime);
     }
     
     private void Rotate()
     {
-        float mouseX = Input.GetAxisRaw("Mouse X") * _mouseSpeed * _terrain.setting.mouseSensitivity;
-        float mouseY = Input.GetAxisRaw("Mouse Y") * _mouseSpeed * _terrain.setting.mouseSensitivity;
+        float mouseX = Input.GetAxisRaw("Mouse X") * playerData.mouseSpeed * terrain.inGameSetting.mouseSensitivity;
+        float mouseY = Input.GetAxisRaw("Mouse Y") * playerData.mouseSpeed * terrain.inGameSetting.mouseSensitivity;
         
         _rotateX -= mouseY;
         _rotateY += mouseX;
@@ -172,17 +165,17 @@ public class PlayerMove : MonoBehaviour
     
     private void JumpAndFly()
     {
-        _isGround = Physics.Raycast(player.transform.position, Vector3.down, _playerHeight * 0.5f + 0.2f);
+        _isGround = Physics.Raycast(player.transform.position, Vector3.down, playerData.playerHeight * 0.5f + 0.2f);
         
-        if (_isGravity == true)
+        if (_isGravity)
         {
-            if (_isGround == true && Input.GetKeyDown(KeyCode.Space))
-                _rigidbody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
+            if (_isGround && Input.GetKeyDown(KeyCode.Space))
+                _rigidbody.AddForce(Vector3.up * playerData.jumpForce, ForceMode.Impulse);
         }
         else if (_isGravity == false)
         {
             if (Input.GetKey(KeyCode.Space))
-                _rigidbody.position += Vector3.up * (_flyForce * Time.deltaTime);
+                _rigidbody.position += Vector3.up * (playerData.flyForce * Time.deltaTime);
         }
     }
 }

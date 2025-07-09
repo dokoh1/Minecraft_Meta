@@ -2,10 +2,8 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using Input = UnityEngine.Input;
-using File = System.IO.File;
 using System.Linq;
-using Unity.VisualScripting;
-
+using Cysharp.Threading.Tasks;
 
 public class MinecraftTerrain : MonoBehaviour
 {
@@ -14,48 +12,60 @@ public class MinecraftTerrain : MonoBehaviour
     private static readonly int MaxGlobalLight = Shader.PropertyToID("MaxGlobalLight");
     private static readonly int MinGlobalLight = Shader.PropertyToID("MinGlobalLight");
     
-    public Settings setting;
+    //Data
+    public InGame inGameSetting;
     public BlockData blockData;
     public BiomeData biomeData;
-    public Transform player;
-    public GameObject debugUI;
     
-    //빛
-    [Range(0f, 1f)]
-    public float globalLight;
-    public Color Day;
-    public Color Night;
+    //PerlinNoise
+    private CustomNoise _noise;
+    
+    //Debug
+    public GameObject debugUI;
     
     //청크 생성 자료 구조
     public Queue<Chunk> ChunksQueue = new();
-    public List<Chunk> _chunksToUpdate = new();
+    public readonly List<Chunk> ChunksToUpdate = new();
     
     //플레이어
     public Coord PlayerCoord;
+    public Transform player;
     private Camera _mainCamera;
     private Vector3 _spawnPosition;
 
+    //빛
+    [Range(0f, 1f)]
+    public float globalLight;
+    
+    [SerializeField]
+    private Color day;
+    
+    [SerializeField]
+    private Color night;
+
     //구름
-    public Clouds _clouds;
+    [SerializeField]
+    private Clouds clouds;
     
-    
-    // 청크 생성
+    // 청크 클래스 생성
     private Chunk[,] _chunks = new Chunk[VoxelData.TerrainSize, VoxelData.TerrainSize];
     
     // 이전 프레임과 이후 프레임의 Coord를 비교하여 Active를 설정하기 위한 List
     private List<Coord> _activeChunks = new();
     private List<Coord> _previousActiveChunk;
     private Coord _playerPreviousCoord;
-    public float cycleDuration = 600f;
     
+    //밤 낮 조절 변수
+    [SerializeField]
+    private float cycleDuration;
     
-    //멀티 쓰레드 방지용 flag
-    private bool _isRunningModification = false;
+    //Modification Flag
+    private bool _isRunningModification;
     
     //쓰레드 락 오브젝트
     public object ChunkUpdateLock = new();
     public object ChunkListThreadLock = new();
-    public Thread ChunkUpdateThread;
+    private Thread _chunkUpdateThread;
     
     //나무 및 자연 구조물 추가
     private Queue<Queue<VoxelCondition>> _modifications = new();
@@ -72,44 +82,39 @@ public class MinecraftTerrain : MonoBehaviour
     private void Awake()
     {
         if (_instance != null && _instance != this)
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         else
         {
             _instance = this;
         }
-
         appPath = Application.persistentDataPath;
     }
     
-    private void Start()
+    private async void Start()
     {
-        // Application.OpenURL(Application.persistentDataPath);
         _mainCamera = Camera.main;
         worldData = SaveSystem.LoadWorld("Prototype");
-
+        
+        _noise = new CustomNoise();
+        _natureStructure = new NatureStructure();
+        _previousActiveChunk = new List<Coord>();
+        
         Random.InitState(worldData.seed);
         
-        Shader.SetGlobalFloat(MinGlobalLight, VoxelData.minLight);
-        Shader.SetGlobalFloat(MaxGlobalLight, VoxelData.maxLight);
+        Shader.SetGlobalFloat(MinGlobalLight, VoxelData.MinLight);
+        Shader.SetGlobalFloat(MaxGlobalLight, VoxelData.MaxLight);
         
         _spawnPosition = new Vector3
             (VoxelData.TerrainMiddle, 
-            VoxelData.ChunkHeight - 190,
+            VoxelData.PlayerInitHeight,
             VoxelData.TerrainMiddle);
-        
-        _natureStructure = new NatureStructure();
-        _previousActiveChunk = new List<Coord>();
         
         LoadTerrain();
         player.position = _spawnPosition;
         GenerateChunkAroundPlayer();
         _playerPreviousCoord = Vector3ToCoord(player.position);
-        
 
-        ChunkUpdateThread = new Thread(new ThreadStart(ThreadedUpdate));
-        ChunkUpdateThread.Start();
-        
-        
+        await ThreadedUpdate();
     }   
     
     private void Update()
@@ -117,8 +122,8 @@ public class MinecraftTerrain : MonoBehaviour
         float time = Time.time / cycleDuration * Mathf.PI * 2f;
         globalLight = Mathf.Clamp01((Mathf.Sin(time) + 1f) / 2f);
         Shader.SetGlobalFloat(GlobalLight, globalLight);
-        _mainCamera.backgroundColor = Color.Lerp(Night, Day, globalLight);
-        Random.InitState(VoxelData.seed);
+        _mainCamera.backgroundColor = Color.Lerp(night, day, globalLight);
+        Random.InitState(VoxelData.Seed);
         
         PlayerCoord = Vector3ToCoord(player.transform.position);
         
@@ -127,7 +132,6 @@ public class MinecraftTerrain : MonoBehaviour
 
         if (ChunksQueue.Count > 0)
             ChunksQueue.Dequeue().CreateMesh();
-
         if (Input.GetKeyDown(KeyCode.F3))
             debugUI.SetActive(!debugUI.activeSelf);
         
@@ -137,9 +141,9 @@ public class MinecraftTerrain : MonoBehaviour
     
     private void LoadTerrain()
     {
-        for (int x = (VoxelData.TerrainSize / 2) - setting.loadDistance; x < (VoxelData.TerrainSize / 2) + setting.loadDistance; x++)
+        for (int x = (VoxelData.TerrainSize / 2) - inGameSetting.loadDistance; x < (VoxelData.TerrainSize / 2) + inGameSetting.loadDistance; x++)
         {
-            for (int z = (VoxelData.TerrainSize / 2) - setting.loadDistance; z < (VoxelData.TerrainSize / 2) + setting.loadDistance; z++)
+            for (int z = (VoxelData.TerrainSize / 2) - inGameSetting.loadDistance; z < (VoxelData.TerrainSize / 2) + inGameSetting.loadDistance; z++)
             {
                 worldData.LoadChunk(new Vector2Int(x, z));
             }
@@ -150,26 +154,22 @@ public class MinecraftTerrain : MonoBehaviour
     {
         lock (ChunkUpdateLock)
         {
-            _chunksToUpdate[0].UpdateChunk();
-            if (!_activeChunks.Contains(_chunksToUpdate[0]._coord))
-                _activeChunks.Add(_chunksToUpdate[0]._coord);
-            _chunksToUpdate.RemoveAt(0);
+            ChunksToUpdate[0].UpdateChunk();
+            if (!_activeChunks.Contains(ChunksToUpdate[0].Coord))
+                _activeChunks.Add(ChunksToUpdate[0].Coord);
+            ChunksToUpdate.RemoveAt(0);
         }
     }
-    void ThreadedUpdate()
+    private async UniTask ThreadedUpdate()
     {
         while (true)
         {
             if (!_isRunningModification)
                 ApplyModifications();
-            if (_chunksToUpdate.Count > 0)
-                UpdateChunk();
+            if (ChunksToUpdate.Count > 0)
+                await UniTask.RunOnThreadPool(() => UpdateChunk());
+            await UniTask.Delay(10);
         }
-    }
-    
-    private void OnDisable()
-    {
-        ChunkUpdateThread.Abort();
     }
     
     void ApplyModifications()
@@ -194,11 +194,10 @@ public class MinecraftTerrain : MonoBehaviour
 
         _isRunningModification = false;
     }
-
     
     private void GenerateChunkAroundPlayer()
     {
-        _clouds.UpdateCloud();
+        clouds.UpdateCloud();
         Coord playerPos = Vector3ToCoord(player.transform.position);
         _playerPreviousCoord = PlayerCoord;
         PlayerCoord = Vector3ToCoord(player.transform.position);
@@ -207,9 +206,9 @@ public class MinecraftTerrain : MonoBehaviour
         _previousActiveChunk.AddRange(_activeChunks);
         _activeChunks.Clear();
         
-        for (int x = playerPos.X - setting.ViewDistance; x < playerPos.X + setting.ViewDistance; x++)
+        for (int x = playerPos.X - inGameSetting.viewDistance; x < playerPos.X + inGameSetting.viewDistance; x++)
         {
-            for (int z = playerPos.Z - setting.ViewDistance; z < playerPos.Z + setting.ViewDistance; z++)
+            for (int z = playerPos.Z - inGameSetting.viewDistance; z < playerPos.Z + inGameSetting.viewDistance; z++)
             {
                 Coord playerCoord = new Coord(x, z);
                 if (IsChunkInWorld(x, z))
@@ -217,7 +216,6 @@ public class MinecraftTerrain : MonoBehaviour
                     if (_chunks[x, z] == null)
                         _chunks[x, z] = new Chunk(playerCoord);
                     _chunks[x, z].IsActive = true;
-                    
                     
                     _activeChunks.Add(playerCoord);
                 }
@@ -241,11 +239,9 @@ public class MinecraftTerrain : MonoBehaviour
         
         BiomeTypeData[] biomes = biomeData.BiomeTypeDictionary.Values.ToArray();
         
-        // 월드 사이즈 넘는 곳은 air 블록을 배치한다.
         if (!IsVoxelInTerrain(pos))
             return BlockTypeEnum.Air; 
         
-        // 맨 밑에는 배드락
         if (yPos == 0)
             return BlockTypeEnum.BedRock;
         
@@ -258,14 +254,14 @@ public class MinecraftTerrain : MonoBehaviour
 
         for (int i = 0; i < biomes.Length; i++)
         {
-            float weight = CustomNoise.Get2DPerlin(new Vector2(pos.x, pos.z), biomes[i].offset, biomes[i].scale);
+            float weight = _noise.Get2DPerlin(new Vector2(pos.x, pos.z), biomes[i].offset, biomes[i].scale);
 
             if (weight > strongestHeight)
             {
                 strongestHeight = weight;
                 strongestHeightIndex = i;
             }
-            float height = biomes[i].terrainHeight * CustomNoise.Get2DPerlin(new Vector2(pos.x, pos.z), biomes[i].offset, biomes[i].terrainScale) * weight;
+            float height = biomes[i].terrainHeight * _noise.Get2DPerlin(new Vector2(pos.x, pos.z), biomes[i].offset, biomes[i].terrainScale) * weight;
 
             if (height > 0)
             {
@@ -278,6 +274,7 @@ public class MinecraftTerrain : MonoBehaviour
 
         sumOfHeights /= count;
         
+        //terrain Height
         int terrainHeight = Mathf.FloorToInt(sumOfHeights + solidGroundHeight);
         
         BlockTypeEnum voxelValue = BlockTypeEnum.Air;
@@ -297,7 +294,7 @@ public class MinecraftTerrain : MonoBehaviour
             foreach (Load lode in biome.loads)
             {
                 if (yPos > lode.minHeight && yPos < lode.maxHeight)
-                    if (CustomNoise.Get3DPerlin(pos, lode.noiseOffset, lode.scale, lode.threshold))
+                    if (_noise.Get3DPerlin(pos, lode.noiseOffset, lode.scale, lode.threshold))
                         return lode.blockType;
             }
         }
@@ -305,12 +302,12 @@ public class MinecraftTerrain : MonoBehaviour
         //tree PerlinNoise
         if (yPos == terrainHeight)
         {
-            if (CustomNoise.Get2DPerlin(new Vector2(pos.x, pos.z), 0, biome.treeZoneScale) >
+            if (_noise.Get2DPerlin(new Vector2(pos.x, pos.z), 0, biome.treeZoneScale) >
                 biome.treeZoneThreshold)
             {
-                if (CustomNoise.Get2DPerlin(new Vector2(pos.x, pos.z), 0, biome.treePlaceScale) >
+                if (_noise.Get2DPerlin(new Vector2(pos.x, pos.z), 0, biome.treePlaceScale) >
                     biome.treePlaceThreshold)
-                    _modifications.Enqueue(_natureStructure.MakeTree(pos, biome));
+                    _modifications.Enqueue(_natureStructure.MakeTree(pos, biome, _noise));
             }
                 
         }
@@ -362,24 +359,6 @@ public class MinecraftTerrain : MonoBehaviour
 
         return _chunks[x, z];
     }
-}
-
-[System.Serializable]
-public class Settings
-{
-    [Header("Optimization")]
-    public int ViewDistance = 8;
-
-    public int loadDistance = 16;
-    public bool enabledThread = true;
-    
-    [Header("Controls")]
-    [Range(0.1f, 10f)]
-    public float mouseSensitivity = 2.0f;
-    
-    [Header("World Gen")]
-    public int seed = 0;
-      
 }
 
 // 게임 세팅 파일 출력

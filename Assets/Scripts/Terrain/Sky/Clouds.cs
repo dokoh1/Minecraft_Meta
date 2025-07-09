@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.LowLevelPhysics;
+using UnityEngine.Serialization;
 
 public class Clouds : MonoBehaviour
 {
@@ -9,20 +10,20 @@ public class Clouds : MonoBehaviour
 
     [SerializeField] private Texture2D cloudTexture = null;
     [SerializeField] private Material cloudMaterial = null;
-    [SerializeField] private MinecraftTerrain _terrain = null;
     
-    private bool[,] cloudData;
+    private bool[,] _cloudData;
     
-    private int cloudTextureWidth;
-    private int cloudTileSize;
-    private Vector3Int offset;
+    private int _cloudTextureWidth;
+    private int _cloudTileSize;
+    
+    private Vector3Int _offset;
     private Dictionary<Vector2Int, GameObject> _clouds = new Dictionary<Vector2Int, GameObject>();
     
     private void Start()
     {
-        cloudTextureWidth =  cloudTexture.width;
-        cloudTileSize = VoxelData.ChunkWidth;
-        offset = new Vector3Int( - (cloudTextureWidth / 2), 0, - (cloudTextureWidth / 2));
+        _cloudTextureWidth =  cloudTexture.width;
+        _cloudTileSize = VoxelData.ChunkWidth;
+        _offset = new Vector3Int( - (_cloudTextureWidth / 2), 0, - (_cloudTextureWidth / 2));
         
         transform.position = new Vector3(VoxelData.TerrainMiddle, cloudHeight, VoxelData.TerrainMiddle);
         
@@ -33,30 +34,28 @@ public class Clouds : MonoBehaviour
     private void Update()
     {
         Color color = cloudMaterial.color;
-        color.a = _terrain.globalLight;
+        color.a = MinecraftTerrain.Instance.globalLight;
         cloudMaterial.color = color;
     }
 
     // 불투명 인 곳을 cloudData에 담음
     private void LoadCloudData()
     {
-        cloudData = new bool[cloudTextureWidth, cloudTextureWidth];
+        _cloudData = new bool[_cloudTextureWidth, _cloudTextureWidth];
         Color[] cloudTex = cloudTexture.GetPixels();
 
-        for (int x = 0; x < cloudTextureWidth; x++)
+        for (int x = 0; x < _cloudTextureWidth; x++)
         {
-            for (int z = 0; z < cloudTextureWidth; z++)
-            {
-                cloudData[x, z] = (cloudTex[z * cloudTextureWidth + x].a > 0);
-            }
+            for (int z = 0; z < _cloudTextureWidth; z++)
+                _cloudData[x, z] = (cloudTex[z * _cloudTextureWidth + x].a > 0);
         }
     }
 
     private void CreateCloud()
     {
-        for (int x = 0; x < cloudTextureWidth; x += cloudTileSize)
+        for (int x = 0; x < _cloudTextureWidth; x += _cloudTileSize)
         {
-            for (int z = 0; z < cloudTextureWidth; z += cloudTileSize)
+            for (int z = 0; z < _cloudTextureWidth; z += _cloudTileSize)
             {
                 Vector3 position = new Vector3(x, cloudHeight, z);
                 _clouds.Add(PosFromV3(position), CreateCloudTile(AddCloudMeshData(x, z), position));
@@ -80,19 +79,20 @@ public class Clouds : MonoBehaviour
 
     public void UpdateCloud()
     {
-        for (int x = 0; x < cloudTextureWidth; x += cloudTileSize)
+        for (int x = 0; x < _cloudTextureWidth; x += _cloudTileSize)
         {
-            for (int z = 0; z < cloudTextureWidth; z += cloudTileSize)
+            for (int z = 0; z < _cloudTextureWidth; z += _cloudTileSize)
             {
-                Vector3 position = _terrain.player.position + new Vector3(x, 0, z) + offset;
-                position = new Vector3(FloorToMultiple(position.x, cloudTileSize), cloudHeight, FloorToMultiple(position.z, cloudTileSize));
+                Vector3 position = MinecraftTerrain.Instance.player.position + new Vector3(x, 0, z) + _offset;
+                position = new Vector3(FloorToMultiple(position.x, _cloudTileSize), cloudHeight, FloorToMultiple(position.z, _cloudTileSize));
                 Vector2Int cloudPosition = PosFromV3(position);
                 
                 _clouds[cloudPosition].transform.position = position;
             }
         }
     }
-    private int FloorToMultiple(float value, int multiple) {
+    private int FloorToMultiple(float value, int multiple) 
+    {
         return Mathf.FloorToInt(value / (float)multiple) * multiple;
     }
 
@@ -103,7 +103,7 @@ public class Clouds : MonoBehaviour
     
     private int CoordFromFloat(float value)
     {
-        return Mathf.FloorToInt(Mathf.Repeat(value, cloudTextureWidth));
+        return Mathf.FloorToInt(Mathf.Repeat(value, _cloudTextureWidth));
     }
 
     private Mesh AddCloudMeshData(int x, int z)
@@ -112,24 +112,22 @@ public class Clouds : MonoBehaviour
         List<int> indices = new List<int>();
         List<Vector3> normals = new List<Vector3>();
         int vertCount = 0;
-        for (int InnerX = 0; InnerX < cloudTileSize; InnerX++)
+        for (int innerX = 0; innerX < _cloudTileSize; innerX++)
         {
-            for (int InnerZ = 0; InnerZ < cloudTileSize; InnerZ++)
+            for (int innerZ = 0; innerZ < _cloudTileSize; innerZ++)
             {
-                int xVal = x + InnerX;
-                int zVal = z + InnerZ;
+                int xVal = x + innerX;
+                int zVal = z + innerZ;
 
-                if (cloudData[xVal, zVal])
+                if (_cloudData[xVal, zVal])
                 {
-                    vertices.Add(new Vector3(InnerX, 0, InnerZ));
-                    vertices.Add(new Vector3(InnerX, 0, InnerZ + 1));
-                    vertices.Add(new Vector3(InnerX + 1, 0, InnerZ + 1));
-                    vertices.Add(new Vector3(InnerX + 1, 0, InnerZ));
+                    vertices.Add(new Vector3(innerX, 0, innerZ));
+                    vertices.Add(new Vector3(innerX, 0, innerZ + 1));
+                    vertices.Add(new Vector3(innerX + 1, 0, innerZ + 1));
+                    vertices.Add(new Vector3(innerX + 1, 0, innerZ));
                 
                     for (int i = 0; i < 4; i++)
-                    {
                         normals.Add(Vector3.down);
-                    }
                     indices.Add(vertCount + 1);
                     indices.Add(vertCount);
                     indices.Add(vertCount + 2);
@@ -147,5 +145,4 @@ public class Clouds : MonoBehaviour
         mesh.normals = normals.ToArray();
         return mesh;
     }
-
 }

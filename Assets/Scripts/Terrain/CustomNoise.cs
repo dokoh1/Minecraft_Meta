@@ -1,8 +1,8 @@
 using UnityEngine;
 
-public static class CustomNoise
+public class CustomNoise
 {
-    public static float Get2DPerlin(Vector2 position, float offset, float scale)
+    public float Get2DPerlin(Vector2 position, float offset, float scale)
     {
         // scale 값에 따라 작을 수록 부드러운 언덕 높을수록 거친 지형(산악 지형)이 형성됨
         // offset 값은 Perlin Noise의 시작 위치를 이동하는 역할 즉, 같은 scale값을 사용하더라도 완전히 다른 지형이 생성됨
@@ -14,7 +14,7 @@ public static class CustomNoise
             (position.y + 0.1f) / VoxelData.ChunkDepth * scale + offset);
     }
 
-    public static bool Get3DPerlin(Vector3 position, float offset, float scale, float threshold)
+    public bool Get3DPerlin(Vector3 position, float offset, float scale, float threshold)
     {
         float x = (position.x + offset +0.1f) * scale;
         float y = (position.y + offset +0.1f) * scale;

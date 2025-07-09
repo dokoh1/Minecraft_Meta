@@ -5,17 +5,15 @@ using UnityEngine.Animations;
 
 public class Chunk
 {
-    // public Queue<VoxelCondition> Modifications = new();
-    public Vector3 Position;
     
-    public Coord _coord;
+    public readonly Coord Coord;
+    
     private GameObject _chunkObject;
-    
     private MeshRenderer _renderer;
     private MeshFilter _meshFilter;
     private MeshCollider _meshColider;
     
-    
+    private readonly Vector3 _position;
     private readonly List<Vector3> _vertices = new();
     private readonly List<int> _indices = new();
     private readonly List<Vector2> _uvs = new();
@@ -23,12 +21,10 @@ public class Chunk
     private readonly List<int> _leaveIndices = new();
     private readonly List<Color> _colors = new();
     private readonly List<Vector3> _normals = new();
-    private Material[] _materials = new Material[3];
+    private readonly Material[] _materials = new Material[3];
 
     private int _vertexIndex = 0;
-    ChunkData chunkData;
-    
-    //Chunk Acitve Bool
+    private readonly ChunkData _chunkData;
     private bool _isActive;
     
     //청크가 아직 초기화 중이거나, 다른 연산이 진행 중인지 파악하는 bool
@@ -48,7 +44,7 @@ public class Chunk
     
     public Chunk(Coord coord)
     {
-        _coord = coord;
+        Coord = coord;
 
         _chunkObject = new GameObject();
         _meshFilter = _chunkObject.AddComponent<MeshFilter>();
@@ -61,14 +57,15 @@ public class Chunk
         _renderer.materials = _materials;
         
         _chunkObject.transform.SetParent(MinecraftTerrain.Instance.transform);
-        _chunkObject.transform.position = new Vector3(_coord.X * VoxelData.ChunkWidth, 0f, _coord.Z * VoxelData.ChunkDepth);
+        _chunkObject.transform.position = new Vector3(Coord.X * VoxelData.ChunkWidth, 0f, Coord.Z * VoxelData.ChunkDepth);
         
-        Position = _chunkObject.transform.position;
-        chunkData = MinecraftTerrain.Instance.worldData.RequestChunk(new Vector2Int((int)Position.x, (int)Position.z),
+        _position = _chunkObject.transform.position;
+        _chunkData = MinecraftTerrain.Instance.worldData.RequestChunk(new Vector2Int((int)_position.x, (int)_position.z),
             true);
         lock (MinecraftTerrain.Instance.ChunkUpdateLock)
-            MinecraftTerrain.Instance._chunksToUpdate.Add(this);
+            MinecraftTerrain.Instance.ChunksToUpdate.Add(this);
     }
+    
     void CalculateLight()
     {
         Queue<Vector3Int> litBlocks = new Queue<Vector3Int>();
@@ -80,15 +77,15 @@ public class Chunk
                 float lightRay = 1f;
                 for (int y = VoxelData.ChunkHeight - 1; y >= 0; y--)
                 {
-                    BlockState thisBlock = chunkData.Map[x, y, z];
+                    BlockState thisBlock = _chunkData.Map[x, y, z];
 
                     if (thisBlock.BlockType != BlockTypeEnum.Air && MinecraftTerrain.Instance.blockData.BlockTypeDictionary[thisBlock.BlockType].transparency < lightRay)
                     {
                         lightRay = MinecraftTerrain.Instance.blockData.BlockTypeDictionary[thisBlock.BlockType].transparency;
                     }
                     thisBlock.GlobalLightPercent = lightRay;
-                    chunkData.Map[x, y, z] = thisBlock;
-                    if (lightRay > VoxelData.lightFalloff)
+                    _chunkData.Map[x, y, z] = thisBlock;
+                    if (lightRay > VoxelData.LightFalloff)
                         litBlocks.Enqueue(new Vector3Int(x, y, z));
                 }
             }
@@ -104,12 +101,12 @@ public class Chunk
                 Vector3Int neighbor = new Vector3Int((int)currentBlock.x, (int)currentBlock.y, (int)currentBlock.z);
                 if (IsVoxelInChunk(neighbor.x, neighbor.y, neighbor.z))
                 {
-                    if (chunkData.Map[neighbor.x, neighbor.y, neighbor.z].GlobalLightPercent <
-                        chunkData.Map[block.x, block.y, block.z].GlobalLightPercent - VoxelData.lightFalloff)
+                    if (_chunkData.Map[neighbor.x, neighbor.y, neighbor.z].GlobalLightPercent <
+                        _chunkData.Map[block.x, block.y, block.z].GlobalLightPercent - VoxelData.LightFalloff)
                     {
-                        chunkData.Map[neighbor.x, neighbor.y, neighbor.z].GlobalLightPercent =
-                            chunkData.Map[block.x, block.y, block.z].GlobalLightPercent - VoxelData.lightFalloff;
-                        if (chunkData.Map[neighbor.x, neighbor.y, neighbor.z].GlobalLightPercent > VoxelData.lightFalloff)
+                        _chunkData.Map[neighbor.x, neighbor.y, neighbor.z].GlobalLightPercent =
+                            _chunkData.Map[block.x, block.y, block.z].GlobalLightPercent - VoxelData.LightFalloff;
+                        if (_chunkData.Map[neighbor.x, neighbor.y, neighbor.z].GlobalLightPercent > VoxelData.LightFalloff)
                             litBlocks.Enqueue(neighbor);
                     }
                 }
@@ -128,26 +125,12 @@ public class Chunk
             {
                 for (int z = 0; z < VoxelData.ChunkDepth; z++)
                 {
-                    if (MinecraftTerrain.Instance.blockData.BlockTypeDictionary[chunkData.Map[x, y, z].BlockType].isSolid)
-                    {
+                    if (MinecraftTerrain.Instance.blockData.BlockTypeDictionary[_chunkData.Map[x, y, z].BlockType].isSolid)
                         UpdateMeshData(new Vector3(x, y, z));
-                    }
                 }
             }
         }
         MinecraftTerrain.Instance.ChunksQueue.Enqueue(this);
-    }
-    
-    public void ClearChunk()
-    {
-        _vertexIndex = 0;
-        _vertices.Clear();
-        _indices.Clear();
-        _uvs.Clear();
-        _transparentIndices.Clear();
-        _leaveIndices.Clear();
-        _colors.Clear();
-        _normals.Clear();
     }
     
     private void UpdateMeshData(Vector3 pos)
@@ -156,7 +139,7 @@ public class Chunk
         int y = Mathf.FloorToInt(pos.y);
         int z = Mathf.FloorToInt(pos.z);
         
-        BlockTypeEnum blockKey = chunkData.Map[x, y, z].BlockType;
+        BlockTypeEnum blockKey = _chunkData.Map[x, y, z].BlockType;
         bool isTransparent = MinecraftTerrain.Instance.blockData.BlockTypeDictionary[blockKey].isDrawing;
         bool isLeave = MinecraftTerrain.Instance.blockData.BlockTypeDictionary[blockKey].isLeave;
         
@@ -211,6 +194,19 @@ public class Chunk
             }
         }
     }
+    
+    public void ClearChunk()
+    {
+        _vertexIndex = 0;
+        _vertices.Clear();
+        _indices.Clear();
+        _uvs.Clear();
+        _transparentIndices.Clear();
+        _leaveIndices.Clear();
+        _colors.Clear();
+        _normals.Clear();
+    }
+    
 
 
 
@@ -221,7 +217,7 @@ public class Chunk
         {
             Vector3 checkVoxel = thisVoxel + VoxelData.FaceChecks[i];
             if (!IsVoxelInChunk((int)checkVoxel.x, (int)checkVoxel.y, (int)checkVoxel.z))
-                MinecraftTerrain.Instance._chunksToUpdate.Insert(0, MinecraftTerrain.Instance.Vector3ToChunk(checkVoxel + Position));
+                MinecraftTerrain.Instance.ChunksToUpdate.Insert(0, MinecraftTerrain.Instance.Vector3ToChunk(checkVoxel + _position));
         }
     }
     
@@ -234,15 +230,14 @@ public class Chunk
         xCheck -= Mathf.FloorToInt(_chunkObject.transform.position.x);
         zCheck -= Mathf.FloorToInt(_chunkObject.transform.position.z);
         
-        chunkData.Map[xCheck, yCheck, zCheck].BlockType = blockType;
+        _chunkData.Map[xCheck, yCheck, zCheck].BlockType = blockType;
         
-        MinecraftTerrain.Instance.worldData.AddToModifiedChunks(chunkData);
+        MinecraftTerrain.Instance.worldData.AddToModifiedChunks(_chunkData);
 
         lock (MinecraftTerrain.Instance.ChunkUpdateLock)
         {
-            MinecraftTerrain.Instance._chunksToUpdate.Insert(0, this);
+            MinecraftTerrain.Instance.ChunksToUpdate.Insert(0, this);
             UpdateAroundChunk(xCheck, yCheck, zCheck);
-            
         }
     }
 
@@ -262,9 +257,9 @@ public class Chunk
         int z = Mathf.FloorToInt(pos.z);
 
         if (!IsVoxelInChunk(x, y, z))
-            return MinecraftTerrain.Instance.GetBlockState(pos + Position);
+            return MinecraftTerrain.Instance.GetBlockState(pos + _position);
         
-        return chunkData.Map[x, y, z];
+        return _chunkData.Map[x, y, z];
     }
 
 
@@ -274,9 +269,9 @@ public class Chunk
         int yCheck = Mathf.FloorToInt(vector.y);
         int zCheck = Mathf.FloorToInt(vector.z);
         
-        xCheck -= Mathf.FloorToInt(Position.x);
-        zCheck -= Mathf.FloorToInt(Position.z);
-        return chunkData.Map[xCheck, yCheck, zCheck];
+        xCheck -= Mathf.FloorToInt(_position.x);
+        zCheck -= Mathf.FloorToInt(_position.z);
+        return _chunkData.Map[xCheck, yCheck, zCheck];
     }
     
 
@@ -324,7 +319,7 @@ public class Chunk
             uv0.Set(x + VoxelData.NormalizedBlockTextureSize, y + VoxelData.NormalizedBlockTextureSize);
             _uvs.Add(uv0);
         }
-        else if (isLeave)
+        else
         {
             uv0.Set(0, 0);
             _uvs.Add(uv0);
@@ -343,59 +338,5 @@ public class Chunk
             z < 0 || z > VoxelData.ChunkDepth - 1)
             return false;
         return true;
-    }
-}
-
-public class BlockState
-{
-    public BlockTypeEnum BlockType;
-    public float GlobalLightPercent;
-
-    public BlockState()
-    {
-        BlockType = BlockTypeEnum.Air;
-        GlobalLightPercent = 0f;
-    }
-
-    public BlockState(BlockTypeEnum blocktype)
-    {
-        BlockType = blocktype;
-        GlobalLightPercent = 0f;
-    }
-}
-
-public class Coord
-{
-    public int X;
-    public int Z;
-    
-    public Coord(int x, int z)
-    {
-        X = x;
-        Z = z;
-    }
-
-    public Coord()
-    {
-        X = 0;
-        Z = 0;
-    }
-
-    public Coord(Vector3 pos)
-    {
-        int xCheck = Mathf.FloorToInt(pos.x);
-        int zCheck = Mathf.FloorToInt(pos.z);
-        X = Mathf.FloorToInt(xCheck) /  VoxelData.ChunkWidth;
-        Z = Mathf.FloorToInt(zCheck) / VoxelData.ChunkDepth;
-    }
-
-    public bool Equals(Coord other)
-    {
-        if (other == null)
-            return false;
-        else if (other.X == X && other.Z == Z)
-            return true;
-        else
-            return false;
     }
 }

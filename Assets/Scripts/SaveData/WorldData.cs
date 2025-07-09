@@ -41,8 +41,6 @@ public class WorldData
     public ChunkData RequestChunk(Vector2Int coord, bool create)
     {
         ChunkData c;
-        lock (MinecraftTerrain.Instance.ChunkListThreadLock)
-        {
             if (Chunks.ContainsKey(coord))
                 c =  Chunks[coord];
             
@@ -54,7 +52,6 @@ public class WorldData
                 LoadChunk(coord);
                 c = Chunks[coord];
             }
-        }
 
         return c;
     }
@@ -89,6 +86,7 @@ public class WorldData
     {
         if (!IsVoxelInTerrain(pos))
             return;
+        
         int x = Mathf.FloorToInt(pos.x / VoxelData.ChunkWidth);
         int z = Mathf.FloorToInt(pos.z / VoxelData.ChunkDepth);
         
@@ -101,8 +99,6 @@ public class WorldData
 
         chunk.Map[voxel.x, voxel.y, voxel.z].BlockType = value;
         AddToModifiedChunks(chunk);
-        
-
     }
     
     //특정 좌표의 블록 데이터를 가져옴

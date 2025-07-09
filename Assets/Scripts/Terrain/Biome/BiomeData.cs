@@ -8,17 +8,15 @@ public class BiomeData : MonoBehaviour
     {
         LoadBiomeTypes();
     }
-
-    // Update is called once per frame
+    
     private void LoadBiomeTypes()
     {
         BiomeTypeData[] biomeTypes = Resources.LoadAll<BiomeTypeData>("BiomeTypes");
-        foreach (var biometype in biomeTypes)
+        foreach (var biomeType in biomeTypes)
         {
-            BiomeTypeEnum biomeEnum;
-            if (System.Enum.TryParse(biometype.biomeName, out biomeEnum))
+            if (System.Enum.TryParse(biomeType.biomeName, out BiomeTypeEnum biomeEnum))
             {
-                BiomeTypeDictionary.Add(biomeEnum, biometype);
+                BiomeTypeDictionary.Add(biomeEnum, biomeType);
             }
         }
     }
