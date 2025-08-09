@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class ItemData : MonoBehaviour
+public class ItemDataPre : MonoBehaviour
 {
     public readonly Dictionary<BlockTypeEnum, ItemTypeData> ItemTypeDictionary = new();
     

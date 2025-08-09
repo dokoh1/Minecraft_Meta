@@ -8005,6 +8005,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1561806114}
+  player: {fileID: 0}
 --- !u!1001 &1596279296
 PrefabInstance:
   m_ObjectHideFlags: 0
