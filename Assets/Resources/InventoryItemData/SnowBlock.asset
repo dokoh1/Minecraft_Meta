@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e4853adbf2a36f479ee02d322a78753, type: 3}
   m_Name: SnowBlock
   m_EditorClassIdentifier: 
-  itemName: 
+  itemName: SnowBlock
   itemIcon: {fileID: 0}
-  blockType: 0
+  blockType: 6
   isStackable: 0

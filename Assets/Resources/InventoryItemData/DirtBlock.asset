@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e4853adbf2a36f479ee02d322a78753, type: 3}
   m_Name: DirtBlock
   m_EditorClassIdentifier: 
-  itemName: Dirt
+  itemName: DirtBlock
   itemIcon: {fileID: -1843937187, guid: 10fb9dc30c7a04542a294736b4b013cc, type: 3}
   blockType: 2
   isStackable: 0
