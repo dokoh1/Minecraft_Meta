@@ -5,7 +5,7 @@ public class ToolbarMirror : MonoBehaviour
 {
     public static ToolbarMirror Instance;
 
-    public InventorySlot[] playerToolbarSlots; // 실제 툴바 (화면 하단)
+    public InventorySlotPre[] playerToolbarSlots; // 실제 툴바 (화면 하단)
 
     private void Awake()
     {
@@ -17,19 +17,19 @@ public class ToolbarMirror : MonoBehaviour
     {
         if (index < 0 || index >= playerToolbarSlots.Length) return;
 
-        InventorySlot slot = playerToolbarSlots[index];
+        InventorySlotPre slotPre = playerToolbarSlots[index];
         
-        slot.itemID = id;
-        slot.hasBlock = true;
+        slotPre.itemID = id;
+        slotPre.hasBlock = true;
 
         // 기존 아이콘 제거
-        foreach (Transform child in slot.transform)
+        foreach (Transform child in slotPre.transform)
         {
             Destroy(child.gameObject);
         }
 
         //복제
-        GameObject newItem = Instantiate(inventoryItemPrefab, slot.transform);
+        GameObject newItem = Instantiate(inventoryItemPrefab, slotPre.transform);
         newItem.transform.localPosition = Vector3.zero;
 
         Destroy(newItem.GetComponent<InventoryItem>());

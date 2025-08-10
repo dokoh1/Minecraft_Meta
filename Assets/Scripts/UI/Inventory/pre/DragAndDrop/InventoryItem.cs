@@ -133,10 +133,10 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         GameObject dropTarget = eventData.pointerEnter;
 
-        if (dropTarget != null && dropTarget.GetComponent<InventorySlot>())
+        if (dropTarget != null && dropTarget.GetComponent<InventorySlotPre>())
         {
             // 드롭 대상 슬롯
-            InventorySlot slot = dropTarget.GetComponent<InventorySlot>();
+            InventorySlotPre slotPre = dropTarget.GetComponent<InventorySlotPre>();
 
             // 아이템 타입 얻기
             BlockTypeEnum blockType = ItemSpriteMapper.Instance.GetBlockTypeFromSprite(copyImage.sprite);
@@ -152,11 +152,11 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             Destroy(copyItem.GetComponent<InventoryItem>());
 
             // 슬롯 데이터 저장
-            slot.itemID = itemID;
-            slot.hasBlock = true;
+            slotPre.itemID = itemID;
+            slotPre.hasBlock = true;
 
             // PlayerToolbar에도 복제
-            ToolbarMirror.Instance.SyncToolbarSlot(slot.slotIndex, copyImage.sprite, itemID);
+            ToolbarMirror.Instance.SyncToolbarSlot(slotPre.slotIndex, copyImage.sprite, itemID);
         }
         else
         {

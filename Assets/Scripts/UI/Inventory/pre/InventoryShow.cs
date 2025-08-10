@@ -42,7 +42,7 @@ public class InventoryShow : MonoBehaviour
    {
       foreach (GameObject slotObj in toolBar)
       {
-         InventorySlot slot = slotObj.GetComponent<InventorySlot>();
+         InventorySlotPre slotPre = slotObj.GetComponent<InventorySlotPre>();
          /*
          if (!slot.hasBlock)
          {

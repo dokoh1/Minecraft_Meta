@@ -4,7 +4,7 @@ using UnityEngine.UI;
 public class ToolbarManager : MonoBehaviour
 {
    public RectTransform highlight;                     // 하이라이트 프레임
-   public InventorySlot[] toolbarSlots;                // 9개의 슬롯
+   public InventorySlotPre[] toolbarSlots;                // 9개의 슬롯
    
    private int currentSlotIndex = 0;                   // 현재 선택된 슬롯 인덱스
    private float _initSetting = 50; 
@@ -63,7 +63,7 @@ public class ToolbarManager : MonoBehaviour
       return toolbarSlots[currentSlotIndex].itemID;
    }
 
-   public InventorySlot GetActiveSlot()
+   public InventorySlotPre GetActiveSlot()
    {
       return toolbarSlots[currentSlotIndex];
    }

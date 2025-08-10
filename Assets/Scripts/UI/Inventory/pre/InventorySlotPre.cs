@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventorySlot : MonoBehaviour
+public class InventorySlotPre : MonoBehaviour
 {
     public Image icon;
     public bool hasBlock = false;
