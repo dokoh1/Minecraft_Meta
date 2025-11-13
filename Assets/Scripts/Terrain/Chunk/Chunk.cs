@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Cysharp.Threading.Tasks;
-using UnityEngine.Animations;
 
+/// <summary>
+/// 한 청크의 메시 데이터 빌드(백그라운드) -> 메시에 적용(메인 스레드). 충돌체 생성
+/// 블록 편집 반영, 청크 경계 변경 전파, 간단한 라이트 전파(전역광).
+/// 렌더 구조 :  서브메시 3개(0 = 불투명, 1 = 반투명, 2 = 잎사귀)
+/// </summary>
 public class Chunk
 {
     
@@ -11,7 +14,7 @@ public class Chunk
     private GameObject _chunkObject;
     private MeshRenderer _renderer;
     private MeshFilter _meshFilter;
-    private MeshCollider _meshColider;
+    private MeshCollider _meshCollider;
     
     private readonly Vector3 _position;
     private readonly List<Vector3> _vertices = new();
@@ -27,7 +30,9 @@ public class Chunk
     private readonly ChunkData _chunkData;
     private bool _isActive;
     
-    //청크가 아직 초기화 중이거나, 다른 연산이 진행 중인지 파악하는 bool
+    /// <summary>
+    /// 청크 표시/숨김 토글
+    /// </summary>
     public bool IsActive
     {
         get
@@ -42,6 +47,12 @@ public class Chunk
         }
     }
     
+    /// <summary>
+    /// 청크 게임오브젝트 생성, 필수 컴포넌트 등록(MeshFilter/Renderer/Collider)
+    /// Material 세팅, 위치 지정, ChunkData 요청, 업데이트 큐 등록
+    /// MinecraftTerrain.GenerateChunkAroundPlayer() 내부에서 신규 청크 필요 시 호출
+    /// </summary>
+    /// <param name="coord"></param>
     public Chunk(Coord coord)
     {
         Coord = coord;
@@ -49,7 +60,7 @@ public class Chunk
         _chunkObject = new GameObject();
         _meshFilter = _chunkObject.AddComponent<MeshFilter>();
         _renderer = _chunkObject.AddComponent<MeshRenderer>();
-        _meshColider = _chunkObject.AddComponent<MeshCollider>();
+        _meshCollider = _chunkObject.AddComponent<MeshCollider>();
 
         _materials[0] = MinecraftTerrain.Instance.blockData.material;
         _materials[1] = MinecraftTerrain.Instance.blockData.transparentMaterial;
@@ -65,7 +76,11 @@ public class Chunk
         lock (MinecraftTerrain.Instance.ChunkUpdateLock)
             MinecraftTerrain.Instance.ChunksToUpdate.Add(this);
     }
-    
+    /// <summary>
+    /// 전역광 간단 전파.
+    /// 위에서 아래로 스캔: 블록의 transparency를 누적해 GlobalLightPercent 설정, 임계치 LightFalloff 이상이면 큐에 등록
+    /// 큐 BFS: 6방향 이웃으로 감쇠(-LightFalloff) 전파
+    /// </summary>
     void CalculateLight()
     {
         Queue<Vector3Int> litBlocks = new Queue<Vector3Int>();
@@ -114,7 +129,13 @@ public class Chunk
         }
     
     }
-    
+    /// <summary>
+    /// 메시 버퍼 생성 단계
+    /// 1. ClearChunk()
+    /// 2. CalculateLight()
+    /// 3. 모든 Voxel 순회 : isSolid면 UpdateMeshData()로 면 추가
+    /// 4. 완료되면 자기 자신을 ChunksQueue에 Enqueue -> (메인 스레드) CreateMesh()로 실제 적용
+    /// </summary>
     public void UpdateChunk()
     {
         ClearChunk();
@@ -132,6 +153,15 @@ public class Chunk
         }
         MinecraftTerrain.Instance.ChunksQueue.Enqueue(this);
     }
+    /// <summary>
+    /// 하나의 복셀에 대해 보이는 면만 골라 버텍스/인덱스/UV/노말/색을 버퍼에 Push
+    /// 1. 현재 블록 타입 -> blockKey.
+    /// 2. neighbor = IsCheckVoxel(pos + faceDir)가 그려지는 블록인지에 따라 "현재 Voxel의 해당 면"을 추가
+    /// 3. 면 추가 시
+    /// - 4 버텍스, 면 노말 4개, UV 4개(AddTexture), 색상 4개(알파=라이트)
+    /// - 인덱스 6개(두 삼각형). 서브메시에 따라 _indices/_transparentIndices/_leaveIndices 중 하나에 push
+    /// </summary>
+    /// <param name="pos"></param>
     
     private void UpdateMeshData(Vector3 pos)
     {
@@ -194,7 +224,9 @@ public class Chunk
             }
         }
     }
-    
+    /// <summary>
+    /// 빌드 버퍼 초기화
+    /// </summary>
     public void ClearChunk()
     {
         _vertexIndex = 0;
@@ -209,7 +241,12 @@ public class Chunk
     
 
 
-
+    /// <summary>
+    /// 경계에 닿는 수정이 있을 때 인접 청크도 업데이트 큐 맨 앞에 넣어 우선 갱신.
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="z"></param>
     private void UpdateAroundChunk(int x, int y, int z)
     {
         Vector3 thisVoxel = new Vector3(x, y, z);
@@ -220,7 +257,11 @@ public class Chunk
                 MinecraftTerrain.Instance.ChunksToUpdate.Insert(0, MinecraftTerrain.Instance.Vector3ToChunk(checkVoxel + _position));
         }
     }
-    
+    /// <summary>
+    /// 월드 좌표의 블록을 현재 청크의 로컬 인덱스로 변환해서 타입 교체 -> 수정된 청크 등록 -> 본인/경계 이웃 청크 우선 업데이트 큐에 push
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <param name="blockType"></param>
     public void EditBlockInChunk(Vector3 pos, BlockTypeEnum blockType)
     {
         int xCheck = Mathf.FloorToInt(pos.x);
@@ -246,7 +287,9 @@ public class Chunk
 
 
     /// <summary>
-    /// Voxel이 생성되어야할지 말아야할지 판단하는 함수
+    /// "그 면을 그릴지" 판단용으로 이웃 Voxel 상태 조회
+    /// - 청크 내부면 _chunkData.Map
+    /// - 밖이면 MinecraftTerrain.Instance.GetBlockState(pos + _position) 로 월드 좌표에서 조회
     /// </summary>
     /// <param name="pos">위치</param>
     /// <returns></returns>
@@ -261,20 +304,13 @@ public class Chunk
         
         return _chunkData.Map[x, y, z];
     }
-
-
-    public BlockState GetVoxelFromVector(Vector3 vector)
-    {
-        int xCheck = Mathf.FloorToInt(vector.x);
-        int yCheck = Mathf.FloorToInt(vector.y);
-        int zCheck = Mathf.FloorToInt(vector.z);
-        
-        xCheck -= Mathf.FloorToInt(_position.x);
-        zCheck -= Mathf.FloorToInt(_position.z);
-        return _chunkData.Map[xCheck, yCheck, zCheck];
-    }
     
-
+    /// <summary>
+    /// 메인 스레드에서 빌드된 버퍼로 Mesh/Collider 실제 적용
+    /// - mesh.subMeshCount = 3 -> 서브 메시별로 인덱스 적용
+    /// - UV/색/노말 적용
+    /// - _meshFilter.mesh = mesh; -> _meshCollider.sharedMesh 에 동일 메시 사용
+    /// </summary>
     public void CreateMesh()
     {
         Mesh mesh = new();
@@ -289,7 +325,7 @@ public class Chunk
         mesh.colors = _colors.ToArray();
         mesh.normals = _normals.ToArray();
         _meshFilter.mesh = mesh;    
-        _meshColider.sharedMesh = _meshFilter.mesh;
+        _meshCollider.sharedMesh = _meshFilter.mesh;
         
     }
 
@@ -331,6 +367,13 @@ public class Chunk
             _uvs.Add(uv0);
         }
     }
+    /// <summary>
+    /// 로컬 복셀 인덱스 범위 체크
+    /// </summary>
+    /// <param name="x"></param>
+    /// <param name="y"></param>
+    /// <param name="z"></param>
+    /// <returns></returns>
     bool IsVoxelInChunk(int x, int y, int z)
     {
         if (x < 0 || x > VoxelData.ChunkWidth - 1 ||

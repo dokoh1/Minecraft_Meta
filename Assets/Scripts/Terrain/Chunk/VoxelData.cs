@@ -1,22 +1,27 @@
 using UnityEngine;
-
+/// <summary>
+///  월드 규격과 정육면체 한 칸의 기하 정보를 한데 모아둔 상수/테이블 집합
+/// </summary>
 public static class VoxelData
 {
+    // 청크의 Voxel 그리드 크기
     public static readonly int ChunkWidth = 16;
     public static readonly int ChunkDepth = 16;
     public static readonly int ChunkHeight = 256;
-
+    
+    // 초기 플레이어 Y 높이
     public static readonly int PlayerInitHeight = 70;
 
+    // 아틀라스 사이즈 16X16 타일
     public static readonly int TextureAtlasSize = 16;
+    // 100X100 Chunk
     public static readonly int TerrainSize = 100;
 
     //Light Value
+    // 셰이더의 전역 광량 범위를 고정
     public static readonly float MinLight = 0.1f;
     public static readonly float MaxLight = 0.9f;
     public static readonly float LightFalloff = 0.1f;
-
-    public static readonly int Seed = 0;
     
     public static int TerrainInVoxelSize
     {

@@ -1,6 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// 영속 메타: worldName, seed.
+/// 런타임 상태: 메모리에 로드된 청크들(Chunks)과 저장 필요한 청크들(modifiedChunks).
+/// 좌표 → 청크/보셀 매핑: 월드 보셀 좌표를 청크 원점/로컬 보셀로 바꿔 접근(Set/Get).
+/// 로드 파이프라인: 요청한 청크가 없으면 디스크에서 로드하거나 새로 생성.
+/// </summary>
+
 [System.Serializable]
 public class WorldData
 {
@@ -9,21 +16,19 @@ public class WorldData
     //시드
     public int seed;
     
-    //월드에 로드된 청크 저장
+    // 메모리에 로드된 청크들. 키는 "청크 원점의 월드 복셀 좌표"(x,z가 ChunkWidth/Detph의 배수);
     [System.NonSerialized]
     public Dictionary<Vector2Int, ChunkData> Chunks = new();
     
-    //변경된 청크
+    // 편집 등으로 저장 대상이 된 청크 목록.
     [System.NonSerialized]
     public List<ChunkData> modifiedChunks = new();
     
-    //변경된 청크 추가
-    
+    // 이름/시드로 새 월드 만들거나, 다른 worldData에서 복사.
     public WorldData(string _worldName, int _seed)
     {
         worldName = _worldName;
         seed = _seed;
-        
     }
     
     public WorldData(WorldData WorldData)
@@ -31,13 +36,24 @@ public class WorldData
         worldName = WorldData.worldName;
         seed = WorldData.seed;
     }
+    /// <summary>
+    /// 같은 청크가 중복되지 않게 저장 목록에 등록
+    /// </summary>
+    /// <param name="chunk"></param>
     public void AddToModifiedChunks(ChunkData chunk)
     {
         if (!modifiedChunks.Contains(chunk))
             modifiedChunks.Add(chunk);
     }
     
-    //청크 요청 없으면 생성
+    /// <summary>
+    /// 1. 이미 로드됨 -> 그대로 반환
+    /// 2. 없고 create==false -> null
+    /// 3. 없고 create==true -> LoadChunk(coord) 호출 후 반환
+    /// </summary>
+    /// <param name="coord"></param>
+    /// <param name="create"></param>
+    /// <returns></returns>
     public ChunkData RequestChunk(Vector2Int coord, bool create)
     {
         ChunkData c;
@@ -56,7 +72,13 @@ public class WorldData
         return c;
     }
 
-    //청크 로드 없으면 생성
+    /// <summary>
+    /// 1. 이미 있으면 종료
+    /// 2. SaveSystem.LoadChunk(worldName, coord) 시도
+    /// - 성공 -> 그대로 등록
+    /// - 실패 -> new ChunkData(coord)로 생성 후 ChunkData.ChunkTypeSetting() (절차적 생성)
+    /// </summary>
+    /// <param name="coord"></param>
     public void LoadChunk(Vector2Int coord)
     {
         if (Chunks.ContainsKey(coord))
@@ -81,7 +103,14 @@ public class WorldData
         return false;
     }
 
-    //특정 좌표의 블록을 설정하고 변경된 청크 목록 추가
+    /// <summary>
+    /// 월드 복셀 좌표의 블록 타입을 바꾸고 저장 대상으로 표시.
+    /// 1. 범위 밖이면 return
+    /// 2. x = floor(pos.x/ChunkW) * ChunkW, z = floor(pos.z/ChunkD) * ChunkD
+    /// -> 해당 복셀이 속한 청크의 원점(월드 복셀 좌표)
+    /// </summary>
+    /// <param name="pos"></param>
+    /// <param name="value"></param>
     public void SetVoxel(Vector3 pos, BlockTypeEnum value)
     {
         if (!IsVoxelInTerrain(pos))

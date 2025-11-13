@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class NatureStructure
 {
+    /// <summary>
+    /// 나무 한 그루를 구성하는 복셀 변경 작업들을 큐에 담아 반환하는 빌더
+    /// </summary>
+    /// <param name="position"></param>
+    /// <param name="biometype"></param>
+    /// <param name="noise"></param>
+    /// <returns></returns>
     public Queue<VoxelCondition> MakeTree(Vector3 position, BiomeTypeData biometype, CustomNoise noise)
     {
         Queue<VoxelCondition> queue = new();
