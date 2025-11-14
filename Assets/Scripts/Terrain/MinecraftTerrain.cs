@@ -145,7 +145,7 @@ public class MinecraftTerrain : MonoBehaviour
     private void Update()
     {
         float time = Time.time / cycleDuration * Mathf.PI * 2f;
-        globalLight = Mathf.Clamp01((Mathf.Sin(time) + 1f) / 2f);
+        //globalLight = Mathf.Clamp01((Mathf.Sin(time) + 1f) / 2f);
         Shader.SetGlobalFloat(GlobalLight, globalLight);
         _mainCamera.backgroundColor = Color.Lerp(night, day, globalLight); 
         //Random.InitState(VoxelData.Seed);

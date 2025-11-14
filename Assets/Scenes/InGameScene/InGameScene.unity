@@ -3512,8 +3512,8 @@ MonoBehaviour:
   inGameSetting: {fileID: 11400000, guid: 0c97aff2f076d394c949ceab71381771, type: 2}
   blockData: {fileID: 601979238}
   biomeData: {fileID: 556205493}
-  player: {fileID: 835881637}
   debugUI: {fileID: 268211591}
+  player: {fileID: 835881637}
   globalLight: 0.95
   day: {r: 0.5294118, g: 0.80784315, b: 0.92156863, a: 0}
   night: {r: 0.09803922, g: 0.09803922, b: 0.4392157, a: 0}
@@ -6004,7 +6004,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &960496850
 Transform:
   m_ObjectHideFlags: 0
@@ -9197,7 +9197,6 @@ MonoBehaviour:
   cloudHeight: 115
   cloudTexture: {fileID: 2800000, guid: a2de86f90bafdac48b0c9f4fc7c79c92, type: 3}
   cloudMaterial: {fileID: 2100000, guid: f34ea06ba03f22c46bc8dcfe0be3145f, type: 2}
-  _terrain: {fileID: 507072877}
 --- !u!4 &1628425429
 Transform:
   m_ObjectHideFlags: 0
